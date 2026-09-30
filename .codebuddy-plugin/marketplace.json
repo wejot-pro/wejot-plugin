@@ -1,0 +1,15 @@
+{
+  "name": "wejot-agent-plugins",
+  "owner": {
+    "name": "WeJot"
+  },
+  "description": "WeJot survey research, authoring, response retrieval, data cleaning, and analysis plugins for WorkBuddy.",
+  "plugins": [
+    {
+      "name": "wejot-agent",
+      "source": "./workbuddy/plugins/wejot-agent",
+      "description": "Design, create, revise, validate, and submit WeJot surveys and AI interviews; retrieve, clean, and analyze response data with specialized logic and components.",
+      "version": "0.1.5"
+    }
+  ]
+}

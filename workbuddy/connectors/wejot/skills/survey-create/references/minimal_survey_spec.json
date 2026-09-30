@@ -1,0 +1,522 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Minimal Survey Generation Spec Schema",
+  "description": "Input draft structure for generate_standard_survey.py / append_questions_to_survey.py; full generation uses survey + questions, the append script uses only questions; describes structure only, no example data.",
+  "type": "object",
+  "required": [
+    "questions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "survey": {
+      "type": "object",
+      "required": [
+        "title",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "description": "Survey base info; required for full generation, not used in append-question specs."
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code",
+              "options"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "RADIO"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "options": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": [
+                    "string",
+                    "object"
+                  ]
+                }
+              },
+              "otherOption": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code",
+              "options"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "CHECKBOX"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "options": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": [
+                    "string",
+                    "object"
+                  ]
+                }
+              },
+              "minChoices": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "maxChoices": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "otherOption": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "TEXTAREA",
+                  "INPUT"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "placeholder": {
+                "type": "string"
+              },
+              "minLength": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "UPLOAD"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "maxFileCount": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "maxFileSize": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "fileTypes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "SCALE"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "scaleOptions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "sort",
+                    "score",
+                    "title"
+                  ],
+                  "properties": {
+                    "sort": {
+                      "type": "integer",
+                      "description": "Option sort value"
+                    },
+                    "score": {
+                      "type": "number",
+                      "description": "Score value"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Rating option text"
+                    }
+                  }
+                }
+              },
+              "scaleLabels": {
+                "type": "object",
+                "properties": {
+                  "left": {
+                    "type": "string"
+                  },
+                  "right": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code",
+              "rows"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "MATRIX_SCALE"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "rows": {
+                "type": "array",
+                "minItems": 1,
+                "description": "Full canonical row catalog declared at creation. Static matrices show all rows; dynamic matrices with dynamicRows=true let logic activate only a subset.",
+                "items": {
+                  "type": [
+                    "string",
+                    "object"
+                  ]
+                }
+              },
+              "dynamicRows": {
+                "type": "boolean",
+                "description": "When true, the answer side may submit only the activated subset of the rows catalog; creating new rows outside the catalog is not allowed."
+              },
+              "matrixColumns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "sort",
+                    "score"
+                  ],
+                  "anyOf": [
+                    {
+                      "required": [
+                        "columnTitle"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "title"
+                      ]
+                    }
+                  ],
+                  "properties": {
+                    "sort": {
+                      "type": "integer",
+                      "description": "Column sort value"
+                    },
+                    "score": {
+                      "type": "number",
+                      "description": "Column score value"
+                    },
+                    "columnTitle": {
+                      "type": "string",
+                      "description": "Column title; field output by the current generation script"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Column title; legacy-artifact-compatible field"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "title",
+              "type",
+              "page",
+              "code",
+              "answerKeys",
+              "genericStyle",
+              "genericHtml",
+              "genericScript",
+              "chartHtml"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Question title"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "GENERIC"
+                ]
+              },
+              "required": {
+                "type": "boolean",
+                "description": "Whether required"
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Page number, starting from 1"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable question code, unique within the questionnaire"
+              },
+              "description": {
+                "type": "string",
+                "description": "Question description"
+              },
+              "uuid": {
+                "type": "string",
+                "description": "Optional question UUID; script generates when omitted"
+              },
+              "answerKeys": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "userAnswersSample": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "genericStyle": {
+                "type": "string"
+              },
+              "genericHtml": {
+                "type": "string"
+              },
+              "genericScript": {
+                "type": "string"
+              },
+              "chartHtml": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

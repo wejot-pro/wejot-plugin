@@ -1,0 +1,28 @@
+  <script>
+    /* ===== RENDER_GUARD BEGIN ===== 白屏兜底：load 后及每次点击后采样中心三点，全空则恢复被藏的根容器显示。 */
+    (function () {
+      try {
+        var HEALS = 0, timer = null
+        function inEdit() { return document.body && document.body.classList.contains('wj-edit-mode') }
+        function elAt(x, y) { try { return document.elementFromPoint(x, y) } catch (e) { return null } }
+        function painted(el) { return !!el && el.tagName !== 'HTML' && el.tagName !== 'BODY' }
+        function isBlank() {
+          var w = window.innerWidth, h = window.innerHeight, pts = [[w / 2, h / 2], [w / 2, h * 0.3], [w / 2, h * 0.7]]
+          for (var i = 0; i < pts.length; i++) if (painted(elAt(pts[i][0], pts[i][1]))) return false
+          return true   // 三个采样点都只有 body/html → 视为整屏空白
+        }
+        function heal() {
+          var root = document.querySelector('[data-survey-role="survey"]'); if (!root) return
+          var cs = window.getComputedStyle(root)
+          if (cs.display === 'none') root.style.setProperty('display', 'block', 'important')
+          else if (cs.visibility === 'hidden') root.style.setProperty('visibility', 'visible', 'important')
+          else if (parseFloat(cs.opacity) === 0) root.style.setProperty('opacity', '1', 'important')
+        }
+        function check() { if (inEdit() || HEALS >= 3) return; if (isBlank()) { heal(); HEALS++ } }
+        function schedule() { if (timer) clearTimeout(timer); timer = setTimeout(check, 350) }
+        function bind() { document.addEventListener('click', schedule, true); setTimeout(check, 700) }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind()
+      } catch (e) { /* 兜底自身绝不影响问卷 */ }
+    })()
+    /* ===== RENDER_GUARD END ===== */
+  </script>

@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "wejot": {
+      "type": "http",
+      "url": "https://wejot-backend-user-test.xiaotunqifu.com/mcp",
+      "x-workbuddy": {
+        "displayName": {
+          "zh": "WeJot",
+          "en": "WeJot"
+        },
+        "description": {
+          "zh": "连接 WeJot 账号后创建、编辑和分析问卷与 AI 访谈。",
+          "en": "Connect your WeJot account to create, edit, and analyze surveys and AI interviews."
+        },
+        "auth": {
+          "type": "oauth"
+        }
+      }
+    }
+  }
+}

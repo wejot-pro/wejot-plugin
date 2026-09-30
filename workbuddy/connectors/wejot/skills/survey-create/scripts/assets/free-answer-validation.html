@@ -1,0 +1,262 @@
+<script>
+/* ===== FREE_ANSWER_VALIDATION BEGIN =====
+   自由模式卷：多选 min/max 校验、提交前 validateAll、勾选超额拦截。
+   由 generate_free_mode_skeleton.py 嵌入 survey-ui.js；exam/assessment 脚手架自动调用。 */
+(function () {
+  'use strict';
+
+  function qNumStr(q) {
+    var el = q.querySelector('[data-q-number]');
+    return el ? (el.textContent || '').trim() : '';
+  }
+
+  function isRequired(q) {
+    return q.getAttribute('data-required') === '1';
+  }
+
+  function toast(msg) {
+    if (!msg) return;
+    var el = document.createElement('div');
+    el.textContent = msg;
+    el.style.cssText =
+      'position:fixed;top:50px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:99999;transition:opacity .3s;';
+    document.body.appendChild(el);
+    setTimeout(function () {
+      el.style.opacity = '0';
+      setTimeout(function () { el.remove(); }, 300);
+    }, 2500);
+  }
+
+  function choiceBounds(q) {
+    var minC = parseInt(q.getAttribute('data-min-choices') || '1', 10);
+    var maxC = parseInt(q.getAttribute('data-max-choices') || '100', 10);
+    if (!minC || minC < 1) minC = 1;
+    if (!maxC || maxC < 1) maxC = 100;
+    return { min: minC, max: maxC };
+  }
+
+  function checkboxCheckedCount(q) {
+    return q.querySelectorAll('input[type="checkbox"]:checked').length;
+  }
+
+  function formatChoicesHint(q, count) {
+    var bounds = choiceBounds(q);
+    var optN = q.querySelectorAll('[data-option]').length;
+    var minC = bounds.min;
+    var maxC = bounds.max;
+    if (minC <= 1 && maxC >= optN) return '';
+    if (minC === maxC) return '需选 ' + minC + ' 项（已选 ' + count + '/' + maxC + '）';
+    if (minC > 1 && maxC < optN) {
+      return '至少选 ' + minC + ' 项，最多 ' + maxC + ' 项（已选 ' + count + '/' + maxC + '）';
+    }
+    if (minC > 1) return '至少选 ' + minC + ' 项（已选 ' + count + '）';
+    return '最多选 ' + maxC + ' 项（已选 ' + count + '/' + maxC + '）';
+  }
+
+  function ensureChoicesHint(q) {
+    var bounds = choiceBounds(q);
+    var optN = q.querySelectorAll('[data-option]').length;
+    if (bounds.min <= 1 && bounds.max >= optN) return null;
+    var hint = q.querySelector('[data-survey-role="choices-hint"]');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.setAttribute('data-survey-role', 'choices-hint');
+      hint.className = 'choices-hint';
+      q.appendChild(hint);
+    }
+    return hint;
+  }
+
+  function updateChoicesHint(q) {
+    if (q.getAttribute('data-question-type') !== '9') return;
+    var hint = ensureChoicesHint(q);
+    if (!hint) return;
+    var text = formatChoicesHint(q, checkboxCheckedCount(q));
+    hint.textContent = text;
+    hint.style.display = text ? '' : 'none';
+  }
+
+  function setQuestionError(q, on) {
+    if (on) q.classList.add('question-error');
+    else q.classList.remove('question-error');
+  }
+
+  function answerFromState(q) {
+    try {
+      if (typeof state === 'undefined' || !state.answers) return null;
+      return state.answers[q.dataset.questionUuid];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function validateCheckbox(q) {
+    var count = checkboxCheckedCount(q);
+    var bounds = choiceBounds(q);
+    var num = qNumStr(q);
+    if (count === 0) {
+      if (!isRequired(q)) return { ok: true };
+      return { ok: false, msg: '请完成第' + num + '题' };
+    }
+    if (count < bounds.min) return { ok: false, msg: '第' + num + '题最少选' + bounds.min + '项' };
+    if (count > bounds.max) return { ok: false, msg: '第' + num + '题最多选' + bounds.max + '项' };
+    return { ok: true };
+  }
+
+  function validateRadio(q) {
+    if (!isRequired(q)) return { ok: true };
+    if (q.querySelector('[data-option].selected')) return { ok: true };
+    var a = answerFromState(q);
+    if (Array.isArray(a) && a.length > 0) return { ok: true };
+    return { ok: false, msg: '请完成第' + qNumStr(q) + '题' };
+  }
+
+  function validateTextarea(q) {
+    var ta = q.querySelector('textarea');
+    if (!ta) return { ok: true };
+    var val = (ta.value || '').trim();
+    var minL = parseInt(q.getAttribute('data-min-length') || '0', 10) || 0;
+    var maxL = parseInt(q.getAttribute('data-max-length') || '0', 10) || 0;
+    if (!isRequired(q) && !val) return { ok: true };
+    if (isRequired(q) && !val) return { ok: false, msg: '请完成第' + qNumStr(q) + '题' };
+    if (minL > 0 && val.length < minL) {
+      return { ok: false, msg: '第' + qNumStr(q) + '题至少输入' + minL + '字' };
+    }
+    if (maxL > 0 && val.length > maxL) {
+      return { ok: false, msg: '第' + qNumStr(q) + '题最多输入' + maxL + '字' };
+    }
+    return { ok: true };
+  }
+
+  function validateScale(q) {
+    if (!isRequired(q)) return { ok: true };
+    if (q.querySelector('[data-scale-value].active')) return { ok: true };
+    var a = answerFromState(q);
+    if (typeof a === 'number' && !Number.isNaN(a)) return { ok: true };
+    return { ok: false, msg: '请完成第' + qNumStr(q) + '题' };
+  }
+
+  function validateMatrix(q) {
+    if (!isRequired(q)) return { ok: true };
+    var rows = q.querySelectorAll('[data-survey-role="matrix-row"]');
+    if (!rows.length) return { ok: true };
+    for (var i = 0; i < rows.length; i++) {
+      if (!rows[i].querySelector('[data-scale-value].active')) {
+        return { ok: false, msg: '请完成第' + qNumStr(q) + '题（每行都需选择）' };
+      }
+    }
+    return { ok: true };
+  }
+
+  function validateUpload(q) {
+    if (!isRequired(q)) return { ok: true };
+    var a = answerFromState(q);
+    if (Array.isArray(a) && a.length > 0) return { ok: true };
+    var inp = q.querySelector('input[type="file"]');
+    if (inp && inp.files && inp.files.length > 0) return { ok: true };
+    return { ok: false, msg: '请完成第' + qNumStr(q) + '题' };
+  }
+
+  function validateQuestion(q, opts) {
+    opts = opts || {};
+    if (!q) return { ok: true };
+    var t = q.getAttribute('data-question-type');
+    var result = { ok: true };
+    if (t === '9') result = validateCheckbox(q);
+    else if (t === '8') result = validateRadio(q);
+    else if (t === '1') result = validateTextarea(q);
+    else if (t === '10') result = validateScale(q);
+    else if (t === '28') result = validateMatrix(q);
+    else if (t === '15') result = validateUpload(q);
+    else if (isRequired(q)) {
+      var a = answerFromState(q);
+      if (a == null || (Array.isArray(a) && !a.length) || (typeof a === 'string' && !a.trim())) {
+        result = { ok: false, msg: '请完成第' + qNumStr(q) + '题' };
+      }
+    }
+    setQuestionError(q, !result.ok);
+    if (!result.ok) {
+      result.el = q;
+      if (opts.toast && result.msg) toast(result.msg);
+    }
+    return result;
+  }
+
+  function validateAll(opts) {
+    opts = opts || {};
+    var root = document.querySelector('[data-survey-role="survey"]');
+    if (!root) return { ok: true };
+    var questions = root.querySelectorAll('[data-question]');
+    var firstBad = null;
+    var msg = '';
+    for (var i = 0; i < questions.length; i++) {
+      var v = validateQuestion(questions[i], {});
+      if (!v.ok) {
+        if (!firstBad) {
+          firstBad = v.el || questions[i];
+          msg = v.msg || '';
+        }
+      }
+    }
+    if (firstBad) {
+      if (opts.toast) toast(msg || '请完成所有必填题');
+      if (opts.scroll !== false && firstBad.scrollIntoView) {
+        firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return { ok: false, msg: msg, el: firstBad };
+    }
+    return { ok: true };
+  }
+
+  function questionSatisfied(q) {
+    return validateQuestion(q, {}).ok;
+  }
+
+  function bindCheckboxConstraints() {
+    var root = document.querySelector('[data-survey-role="survey"]');
+    if (!root || root._wjFreeChoicesBound) return;
+    root._wjFreeChoicesBound = true;
+    root.addEventListener('change', function (e) {
+      if (document.body && document.body.classList.contains('wj-edit-mode')) return;
+      var cb = e.target;
+      if (!cb || cb.type !== 'checkbox') return;
+      var q = cb.closest('[data-question]');
+      if (!q || q.getAttribute('data-question-type') !== '9') return;
+      if (cb.checked) {
+        var bounds = choiceBounds(q);
+        var checked = q.querySelectorAll('input[type="checkbox"]:checked');
+        if (checked.length > bounds.max) {
+          cb.checked = false;
+          e.stopImmediatePropagation();
+          toast('第' + qNumStr(q) + '题最多选' + bounds.max + '项');
+        }
+      }
+      updateChoicesHint(q);
+      setQuestionError(q, false);
+    }, true);
+    root.querySelectorAll('[data-question][data-question-type="9"]').forEach(function (q) {
+      updateChoicesHint(q);
+    });
+  }
+
+  function init() {
+    bindCheckboxConstraints();
+  }
+
+  window.WJFreeValidation = {
+    init: init,
+    toast: toast,
+    validateQuestion: validateQuestion,
+    validateAll: validateAll,
+    questionSatisfied: questionSatisfied,
+    updateChoicesHint: updateChoicesHint
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+/* ===== FREE_ANSWER_VALIDATION END ===== */
+</script>

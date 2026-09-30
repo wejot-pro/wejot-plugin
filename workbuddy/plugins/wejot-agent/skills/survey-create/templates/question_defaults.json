@@ -1,0 +1,138 @@
+{
+  "uploadQuestions": [
+    {
+      "maxFileCount": 1,
+      "maxFileSize": 102400,
+      "fileTypes": [
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "bmp",
+        "webp",
+        "svg",
+        "heic",
+        "tiff",
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "csv",
+        "ppt",
+        "pptx",
+        "txt",
+        "rtf",
+        "md",
+        "zip",
+        "rar",
+        "7z",
+        "gz",
+        "tar",
+        "mp3",
+        "wav",
+        "m4a",
+        "aac",
+        "ogg",
+        "flac",
+        "mp4",
+        "mov",
+        "avi",
+        "mkv",
+        "webm",
+        "wmv",
+        "flv"
+      ]
+    }
+  ],
+  "scaleQuestions": [
+    {
+      "options": [
+        {
+          "sort": 1,
+          "score": 1.0,
+          "title": "非常不满意"
+        },
+        {
+          "sort": 2,
+          "score": 2.0,
+          "title": "不满意"
+        },
+        {
+          "sort": 3,
+          "score": 3.0,
+          "title": "一般"
+        },
+        {
+          "sort": 4,
+          "score": 4.0,
+          "title": "满意"
+        },
+        {
+          "sort": 5,
+          "score": 5.0,
+          "title": "非常满意"
+        }
+      ]
+    }
+  ],
+  "matrixScaleQuestions": [
+    {
+      "columns": [
+        {
+          "sort": 1,
+          "score": 1.0,
+          "columnTitle": "非常不满意"
+        },
+        {
+          "sort": 2,
+          "score": 2.0,
+          "columnTitle": "不满意"
+        },
+        {
+          "sort": 3,
+          "score": 3.0,
+          "columnTitle": "一般"
+        },
+        {
+          "sort": 4,
+          "score": 4.0,
+          "columnTitle": "满意"
+        },
+        {
+          "sort": 5,
+          "score": 5.0,
+          "columnTitle": "非常满意"
+        }
+      ]
+    }
+  ],
+  "genericQuestions": [
+    {
+      "answerKeys": [
+        "answer"
+      ],
+      "userAnswersSample": [
+        {
+          "answer": 10
+        },
+        {
+          "answer": 9
+        },
+        {
+          "answer": 8
+        },
+        {
+          "answer": 7
+        },
+        {
+          "answer": 5
+        },
+        {
+          "answer": 3
+        }
+      ],
+      "chartHtml": "<!--\n========== This string holds the custom statistics chart code. Only output the HTML from「图表部分 开始」to「图表部分 结束」; do not output the comment section below. ==========\nComment start\n - Purpose: this string is inserted into the questionnaire statistics page (host page) to render the custom question type's statistics chart.\n - Forbidden: must NOT contain <!doctype>, <html>, <head>, <body>, or framework-region script (hasData/applyData, #chart-data-json parsing, etc.); no comments inside the code.\n - Must keep: the two divs #chart-no-data and #chart-content below, and the <script> defining window.renderChart(userAnswers, answerKeys).\n - renderChart: the framework calls it automatically when data exists. Parameters: userAnswers=array of user answer objects (each element is a key-value object; keys are the names in answerKeys, values are the answer values, possibly objects, matching your designed submission data), answerKeys=array of submission keys (matching your designed submission data keys); container show/hide and data parsing are handled by the framework.\n - **Encoding requirements (important!):** strictly follow the **Custom Question Type - Custom Statistics Chart Spec** section in the survey-components SKILL for rendering approach, decision logic, design constraints, and hard limits.\nComment end\n-->\n<!-- 图表部分 开始 -->\n<div id=\"chart-no-data\" style=\"text-align: center; color: rgba(0, 0, 0, 0.4); padding: 24px;\">No data</div>\n<div id=\"chart-content\" style=\"display: none; width: 100%;\">\n    <!--\n      Write the chart HTML here (no title etc.; only a suitable chart)\n    -->\n</div>\n<script>\n  window.renderChart = function(userAnswers, answerKeys) {\n    /*\n      Write logic here to render HTML from userAnswers and answerKeys; handle invalid data cases, e.g. 0 as a divisor\n    */\n  };\n</script>\n<!-- 图表部分 结束 -->"
+    }
+  ]
+}

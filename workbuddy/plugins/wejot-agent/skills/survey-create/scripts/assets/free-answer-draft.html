@@ -1,0 +1,248 @@
+<script>
+/* ===== FREE_ANSWER_DRAFT BEGIN =====
+   自由模式：同机 localStorage 答案草稿（默认开）。只恢复 state.answers + DOM，不自动翻页。
+   可选停页：翻页时 window.notifyFreeDraftPage(n)；并设
+   window.onFreeDraftPageRestore = function (page) { yourShowPage(page); };
+   禁止在 LLM 区再手写一套 answers 的 localStorage。
+   ===== */
+(function () {
+  'use strict';
+
+  // 与标准模式 SURVEY_LOCAL_DRAFT_DEFAULT 分开；false = 关闭本卷答案草稿
+  if (window.SURVEY_FREE_ANSWER_DRAFT_DEFAULT === false) return;
+  if (typeof state === 'undefined' || !state) return;
+
+  var KEY = null;
+  var restoring = false;
+  var saveTimer = null;
+  var currentPage = null;
+
+  function defaultKey() {
+    var first = document.querySelector('[data-question-uuid]');
+    var id = first && first.getAttribute('data-question-uuid');
+    return 'wejot_free_draft_' + (id || (location.pathname || 'survey'));
+  }
+
+  function readDraft() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      return data && typeof data === 'object' ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeDraft() {
+    if (restoring || !KEY) return;
+    try {
+      var payload = {
+        v: 1,
+        answers: JSON.parse(JSON.stringify(state.answers || {})),
+        updatedAt: Date.now(),
+      };
+      if (currentPage != null && !isNaN(Number(currentPage))) {
+        payload.page = Number(currentPage);
+      }
+      localStorage.setItem(KEY, JSON.stringify(payload));
+    } catch (e) {}
+  }
+
+  function scheduleSave() {
+    if (restoring) return;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(writeDraft, 120);
+  }
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(KEY || defaultKey());
+    } catch (e) {}
+  }
+
+  window.notifyFreeDraftPage = function (page) {
+    if (typeof page === 'number' && !isNaN(page)) {
+      currentPage = page;
+      scheduleSave();
+    }
+  };
+
+  window.clearFreeAnswerDraft = clearDraft;
+
+  function findQ(uuid) {
+    try {
+      return document.querySelector('[data-question][data-question-uuid="' + uuid + '"]');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function applyToDom(uuid, value) {
+    var item = findQ(uuid);
+    if (!item) return;
+    var type = String(item.getAttribute('data-question-type') || '');
+
+    try {
+      if (type === '1') {
+        var ta = item.querySelector('textarea');
+        if (ta) ta.value = value == null ? '' : String(value);
+        return;
+      }
+      if (type === '8') {
+        var opts = Array.isArray(value) ? value : [];
+        var selected = opts.find(function (o) { return o && o.selected; }) || opts[0];
+        var ov = selected && selected.value;
+        item.querySelectorAll('[data-option]').forEach(function (el) {
+          el.classList.toggle('selected', ov != null && el.getAttribute('data-option-value') === String(ov));
+        });
+        return;
+      }
+      if (type === '9') {
+        var list = Array.isArray(value) ? value : [];
+        var set = {};
+        list.forEach(function (o) {
+          if (o && o.value != null) set[String(o.value)] = true;
+        });
+        item.querySelectorAll('[data-option]').forEach(function (el) {
+          var v = el.getAttribute('data-option-value');
+          var on = !!set[String(v)];
+          el.classList.toggle('selected', on);
+          var cb = el.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = on;
+        });
+        return;
+      }
+      if (type === '10') {
+        var score = typeof value === 'number' ? value : parseInt(value, 10);
+        item.querySelectorAll('[data-scale-value]').forEach(function (el) {
+          el.classList.toggle('active', parseInt(el.getAttribute('data-scale-value'), 10) === score);
+        });
+        return;
+      }
+      if (type === '28') {
+        var rows = Array.isArray(value) ? value : [];
+        rows.forEach(function (row) {
+          if (!row || row.rowTitle == null) return;
+          var rowEl = item.querySelector('[data-survey-role="matrix-row"][data-matrix-row-label="' + row.rowTitle + '"]');
+          if (!rowEl) return;
+          rowEl.querySelectorAll('[data-scale-value]').forEach(function (el) {
+            el.classList.toggle('active', parseInt(el.getAttribute('data-scale-value'), 10) === Number(row.score));
+          });
+        });
+        return;
+      }
+      if (type === '15') {
+        // blob: URL 刷新后不可用；仅恢复 state，预览由业务自行处理
+        return;
+      }
+      if (type === '39') {
+        if (typeof window.submitGenericAnswer === 'function' && value && typeof value === 'object') {
+          try {
+            window.submitGenericAnswer(uuid, value);
+          } catch (e) {}
+        }
+      }
+    } catch (e) {
+      console.warn('[FreeAnswerDraft] apply failed', uuid, e);
+    }
+  }
+
+  function restore() {
+    var draft = readDraft();
+    if (!draft || !draft.answers || typeof draft.answers !== 'object') return;
+
+    restoring = true;
+    try {
+      Object.keys(draft.answers).forEach(function (uuid) {
+        state.answers[uuid] = draft.answers[uuid];
+        applyToDom(uuid, draft.answers[uuid]);
+      });
+      if (
+        draft.page != null &&
+        !isNaN(Number(draft.page)) &&
+        typeof window.onFreeDraftPageRestore === 'function'
+      ) {
+        try {
+          window.onFreeDraftPageRestore(Number(draft.page));
+        } catch (e) {
+          console.warn('[FreeAnswerDraft] page restore failed', e);
+        }
+      }
+    } finally {
+      setTimeout(function () {
+        restoring = false;
+      }, 80);
+    }
+  }
+
+  function proxyAnswers() {
+    var raw = state.answers || {};
+    if (raw.__freeDraftProxied) return;
+    state.answers = new Proxy(raw, {
+      set: function (t, p, v) {
+        t[p] = v;
+        scheduleSave();
+        return true;
+      },
+      deleteProperty: function (t, p) {
+        delete t[p];
+        scheduleSave();
+        return true;
+      },
+    });
+    try {
+      Object.defineProperty(state.answers, '__freeDraftProxied', {
+        value: true,
+        enumerable: false,
+      });
+    } catch (e) {
+      state.answers.__freeDraftProxied = true;
+    }
+  }
+
+  function wrapSubmit() {
+    // submitSurvey 在校验通过后自行 clearFreeAnswerDraft；此处只包 submitAndStay
+    if (
+      window.SurveyDataBridge &&
+      typeof window.SurveyDataBridge.submitAndStay === 'function' &&
+      !window.SurveyDataBridge.__freeDraftStayWrapped
+    ) {
+      var origStay = window.SurveyDataBridge.submitAndStay.bind(window.SurveyDataBridge);
+      window.SurveyDataBridge.submitAndStay = function () {
+        clearDraft();
+        return origStay.apply(this, arguments);
+      };
+      window.SurveyDataBridge.__freeDraftStayWrapped = true;
+    }
+  }
+
+  KEY = defaultKey();
+  proxyAnswers();
+  wrapSubmit();
+  document.addEventListener('click', function () { scheduleSave(); }, true);
+  document.addEventListener('input', function () { scheduleSave(); }, true);
+  if (!window.SurveyDataBridge || !window.SurveyDataBridge.__freeDraftStayWrapped) {
+    var n = 0;
+    var t = setInterval(function () {
+      n += 1;
+      wrapSubmit();
+      if ((window.SurveyDataBridge && window.SurveyDataBridge.__freeDraftStayWrapped) || n > 40) {
+        clearInterval(t);
+      }
+    }, 50);
+  }
+
+  function bootRestore() {
+    restore();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(bootRestore, 0);
+    });
+  } else {
+    setTimeout(bootRestore, 0);
+  }
+})();
+/* ===== FREE_ANSWER_DRAFT END ===== */
+</script>

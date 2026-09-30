@@ -1,0 +1,221 @@
+  <script>
+    /* ===== 默认脚手架 · 评测分享套件（开箱即用，省得每次重写易踩坑）EVAL_SHARE BEGIN =====
+       自动接管「复制邀请文案」「生成结果海报」——从标准 DOM 读结果，让你默认不用写这两段（容易漏链接/漏遮罩/clipboard 被拦）。
+       标准 id（按 references/assessment-pattern.md）：
+         按钮：#eval-copy  #eval-poster
+         结果文本（套件读取用于文案/海报）：#eval-result-title #eval-result-emoji #eval-result-score #eval-result-desc
+       海报由套件自建「素雅卡片 + 3D 倾斜 + 二维码」遮罩浮层（html2canvas 截图保存）。
+       这是默认实现：直接用最省心；要换海报风格/交互，覆盖 window.WJEvalShare.open，或自己另写一套都可以——不是限制。 */
+    (function () {
+      'use strict';
+      var H2C = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+      var QRJS = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'
+      function $(id) { return document.getElementById(id) }
+      function txt(id) { var e = $(id); return e ? (e.textContent || '').trim() : '' }
+      function shareUrl() {
+        try { if (window.SurveyDataBridge && window.SurveyDataBridge.getShareUrl) return window.SurveyDataBridge.getShareUrl() || '' } catch (e) {}
+        return ''
+      }
+      function loadScript(src, cb) { var s = document.createElement('script'); s.src = src; s.onload = function () { cb(true) }; s.onerror = function () { cb(false) }; document.head.appendChild(s) }
+      function ensureQRLib(cb) { if (typeof window.qrcode !== 'undefined') return cb(); loadScript(QRJS, function () { cb() }) }
+      function ensureH2C(cb) { if (typeof window.html2canvas !== 'undefined') return cb(true); loadScript(H2C, function (ok) { cb(ok) }) }
+
+      /* ---------- 健壮复制：clipboard(.catch) → execCommand → 手动 ---------- */
+      function copyText(text, btn) {
+        function ok() { if (btn) { var o = btn.textContent; btn.textContent = '✅ 已复制，去粘贴给朋友吧'; setTimeout(function () { btn.textContent = o }, 2500) } }
+        function manual() { try { window.prompt('复制下面的文案分享给朋友：', text) } catch (e) {} }
+        function exec() {
+          try {
+            var ta = document.createElement('textarea'); ta.value = text
+            ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0'
+            document.body.appendChild(ta); ta.focus(); ta.select()
+            var done = document.execCommand('copy'); document.body.removeChild(ta)
+            done ? ok() : manual()
+          } catch (e) { manual() }
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(exec)
+        else exec()
+      }
+
+      /* ---------- 真二维码（qrcode-generator）画进 canvas ---------- */
+      function renderQR(canvas, url) {
+        if (!url || typeof window.qrcode === 'undefined') return false
+        try {
+          var q = window.qrcode(0, 'M'); q.addData(url); q.make()
+          var n = q.getModuleCount(), ctx = canvas.getContext('2d'), size = canvas.width, cell = size / n
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size); ctx.fillStyle = '#2f2a24'
+          for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) ctx.fillRect(Math.floor(k * cell), Math.floor(r * cell), Math.ceil(cell), Math.ceil(cell))
+          return true
+        } catch (e) { return false }
+      }
+
+      /* ---------- 海报浮层（素雅卡片）样式 + DOM，套件自建 ---------- */
+      var CSS = '#wj-poster-ovl{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:rgba(35,31,26,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s ease;padding:24px}'
+        + '#wj-poster-ovl.show{opacity:1;pointer-events:auto}'
+        + '#wj-poster-ovl .wj-stage{perspective:1100px}'
+        + '#wj-poster-ovl .wj-card{position:relative;width:300px;border-radius:26px;background:#fbf8f1;overflow:hidden;box-shadow:0 30px 60px -20px rgba(47,42,36,.45),0 8px 20px -10px rgba(47,42,36,.3);transform-style:preserve-3d;opacity:0;transform:rotateY(-70deg) rotateX(12deg) scale(.85);transition:transform .7s cubic-bezier(.2,.8,.25,1),opacity .5s ease;will-change:transform}'
+        + '#wj-poster-ovl.show .wj-card{opacity:1;transform:rotateY(0) rotateX(0) scale(1)}'
+        + '#wj-poster-ovl.show .wj-card.live{transition:transform .2s ease-out;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}'
+        + '#wj-poster-ovl .wj-card::after{content:"";position:absolute;inset:0;border-radius:26px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,0) 38%);mix-blend-mode:screen}'
+        + '#wj-poster-ovl .wj-top{padding:38px 28px 30px;text-align:center;background:radial-gradient(130% 80% at 50% -10%,#fff 0%,#fbf8f1 70%);transform:translateZ(28px)}'
+        + '#wj-poster-ovl .wj-emoji{font-size:60px;line-height:1;filter:drop-shadow(0 6px 10px rgba(47,42,36,.18))}'
+        + '#wj-poster-ovl .wj-type{margin-top:10px;font-weight:800;color:#56664f;word-break:break-word;line-height:1.2}'
+        + '#wj-poster-ovl .wj-label{margin-top:6px;font-size:13px;letter-spacing:2px;color:#c8775a;font-weight:600}'
+        + '#wj-poster-ovl .wj-desc{margin:16px auto 0;max-width:236px;font-size:14px;line-height:1.7;color:#8a8275}'
+        + '#wj-poster-ovl .wj-divider{height:1px;margin:0 28px;background:repeating-linear-gradient(90deg,#e6dfd1 0 7px,transparent 7px 14px)}'
+        + '#wj-poster-ovl .wj-bottom{padding:22px 28px 28px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;background:linear-gradient(180deg,#f3eee2,#efe8d8);transform:translateZ(14px)}'
+        + '#wj-poster-ovl .wj-qr{width:104px;height:104px;border-radius:14px;background:#fff;padding:9px;box-shadow:0 6px 14px -6px rgba(47,42,36,.35)}'
+        + '#wj-poster-ovl .wj-qr canvas{width:100%;height:100%;display:block;border-radius:4px}'
+        + '#wj-poster-ovl .wj-cta{font-size:14px;font-weight:600;letter-spacing:1px;color:#2f2a24}'
+        + '#wj-poster-ovl .wj-cta small{display:block;font-weight:400;font-size:11px;color:#8a8275;margin-top:3px}'
+        + '#wj-poster-ovl .wj-foot{padding:8px 0 12px;text-align:center;font-size:11px;letter-spacing:.5px;color:#a8a094;background:linear-gradient(180deg,#efe8d8,#e9e1cf)}'   // 问卷派出品页脚（仿回答页 powered-by-footer inline，纯字小巧版）；在卡片内 → 截进保存的海报图
+        + '#wj-poster-ovl .wj-hint{font-size:13px;color:#efe9dc;text-shadow:0 1px 4px rgba(0,0,0,.3)}'
+        + '#wj-poster-ovl .wj-actions{display:flex;gap:14px}'
+        + '#wj-poster-ovl .wj-btn{border:none;cursor:pointer;font-size:15px;font-weight:600;letter-spacing:1px;padding:12px 30px;border-radius:999px}'
+        + '#wj-poster-ovl .wj-save{color:#fbf8f1;background:linear-gradient(180deg,#c8775a,#b3624a);box-shadow:0 10px 22px -10px rgba(179,98,74,.8)}'
+        + '#wj-poster-ovl .wj-close{color:#efe9dc;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3)}'
+        + '#wj-poster-ovl .wj-shot{max-width:300px;max-height:60vh;border-radius:26px;box-shadow:0 30px 60px -20px rgba(47,42,36,.45);display:none;transition:transform .2s ease-out;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));will-change:transform}'
+
+      var ovl = null
+      function ensureDOM() {
+        if (ovl) return ovl
+        if (!document.getElementById('wj-poster-style')) { var st = document.createElement('style'); st.id = 'wj-poster-style'; st.textContent = CSS; document.head.appendChild(st) }
+        ovl = document.createElement('div'); ovl.id = 'wj-poster-ovl'
+        ovl.innerHTML =
+          '<div class="wj-stage"><div class="wj-card">'
+          + '<div class="wj-top"><div class="wj-emoji"></div><div class="wj-type"></div><div class="wj-label"></div><p class="wj-desc"></p></div>'
+          + '<div class="wj-divider"></div>'
+          + '<div class="wj-bottom"><div class="wj-qr"><canvas width="208" height="208"></canvas></div><div class="wj-cta">我也要测测看<small>扫码开启你的测评</small></div></div>'
+          + '<div class="wj-foot">问卷派 · 提供技术支持</div>'
+          + '</div></div>'
+          + '<img class="wj-shot" alt="结果海报"/>'
+          + '<div class="wj-hint">长按图片保存到相册 · 发给朋友一起测</div>'
+          + '<div class="wj-actions"><button class="wj-btn wj-close">关闭</button></div>'   // 海报已定格成图片：移动端长按、桌面端右键即可保存，无需「保存图片」按钮
+        document.body.appendChild(ovl)
+        ovl.querySelector('.wj-close').addEventListener('click', hide)
+        ovl.addEventListener('click', function (e) { if (e.target === ovl) hide() })
+        bindTilt()
+        return ovl
+      }
+
+      function populate() {
+        var card = ovl.querySelector('.wj-card')
+        var type = txt('eval-result-title') || '我的结果'
+        ovl.querySelector('.wj-emoji').textContent = txt('eval-result-emoji') || '🎯'
+        var typeEl = ovl.querySelector('.wj-type')
+        typeEl.textContent = type
+        // 类型名按长度自适应字号（短码如 INFJ 大字 + 字距；中文长名收小）
+        var L = type.length
+        typeEl.style.fontSize = L <= 4 ? '44px' : (L <= 6 ? '34px' : (L <= 9 ? '27px' : '22px'))
+        typeEl.style.letterSpacing = L <= 6 ? '4px' : '1px'
+        ovl.querySelector('.wj-label').textContent = txt('eval-result-score') || ''
+        ovl.querySelector('.wj-desc').textContent = (txt('eval-result-desc') || txt('eval-result-quote') || '').slice(0, 60)
+        // 保存提示按设备区分：桌面端长按无效，应提示右键保存；触屏才是长按存相册。
+        var hint = ovl.querySelector('.wj-hint')
+        if (hint) {
+          var canHover = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches
+          hint.textContent = (canHover ? '右键图片保存到本地 · 发给朋友一起测' : '长按图片保存到相册 · 发给朋友一起测')
+        }
+        var qc = ovl.querySelector('.wj-qr canvas')
+        // 分享链接未注入（如编辑器/对话框预览未发 INIT_SHARE_URL，getShareUrl 为空）时回退到当前页 URL，
+        // 保证二维码始终能画出来、不留空白方框。真实答题页有注入分享链接，走正式链接。
+        if (!renderQR(qc, shareUrl() || location.href)) { var ctx = qc.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 208, 208) }
+        // 重置截图态
+        _shotDone = false
+        var shot = ovl.querySelector('.wj-shot'); shot.style.display = 'none'; shot.removeAttribute('src')
+        ovl.querySelector('.wj-stage').style.display = ''
+        card.classList.remove('live')
+      }
+
+      /* 把 live 卡片定格成图片：html2canvas 截图 → 显示为 <img>，这样移动端可**长按图片保存到相册**（DOM 卡片长按不了）。 */
+      var _shotDone = false
+      function toImage(cb) {
+        if (_shotDone) { if (cb) cb(true, (ovl.querySelector('.wj-shot') || {}).src); return }
+        var card = ovl.querySelector('.wj-card')
+        ensureH2C(function (ok) {
+          if (!ok || typeof window.html2canvas === 'undefined') { if (cb) cb(false); return }
+          var prevT = card.style.transform; card.style.transform = 'none'   // 截图前摆正，去掉进场/倾斜变换
+          window.html2canvas(card, { backgroundColor: null, scale: 2, useCORS: true }).then(function (cv) {
+            var data = cv.toDataURL('image/png')
+            var shot = ovl.querySelector('.wj-shot'); shot.src = data; shot.style.display = 'block'   // 'block' 覆盖 CSS 的 display:none，否则图片不显示
+            ovl.querySelector('.wj-stage').style.display = 'none'           // 用图片替换 DOM 卡片 → 可长按保存
+            _shotDone = true
+            if (cb) cb(true, data)
+          }).catch(function () { card.style.transform = prevT; if (cb) cb(false) })
+        })
+      }
+      function show() {
+        ovl.classList.add('show')
+        ensureH2C(function () {})                                          // 预加载，定格更快
+        // 进场动画放完→统一定格成 <img>（任何设备都能长按保存到相册）；鼠标/陀螺仪 3D 倾斜改作用在这张图片上（见 bindTilt）。
+        setTimeout(function () { toImage() }, 820)
+      }
+      function hide() { if (ovl) ovl.classList.remove('show') }
+
+      /* 鼠标视差 + 陀螺仪 3D 倾斜：作用在定格后的 <img>（.wj-shot）上，倾斜与「长按保存」互不冲突 */
+      function bindTilt() {
+        var MAX = 11, T = Math.tanh(1.5)
+        function ease(p) { return Math.tanh(Math.max(-1, Math.min(1, p)) * 1.5) / T }
+        function target() { var s = ovl.querySelector('.wj-shot'); return (s && s.style.display !== 'none') ? s : null }
+        ovl.addEventListener('mousemove', function (e) {
+          var el = target(); if (!el) return
+          var r = el.getBoundingClientRect()
+          var px = (e.clientX - (r.left + r.width / 2)) / (r.width / 2), py = (e.clientY - (r.top + r.height / 2)) / (r.height / 2)
+          el.style.setProperty('--ry', (ease(px) * MAX).toFixed(2) + 'deg')
+          el.style.setProperty('--rx', (-ease(py) * MAX).toFixed(2) + 'deg')
+        })
+        ovl.addEventListener('mouseleave', function () { var el = target(); if (el) { el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg') } })
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission !== 'function') {
+          window.addEventListener('deviceorientation', function (e) {
+            var el = target(); if (!ovl.classList.contains('show') || !el) return
+            el.style.setProperty('--ry', (ease((e.gamma || 0) / 30) * MAX).toFixed(2) + 'deg')
+            el.style.setProperty('--rx', (ease(-((e.beta || 0) - 40) / 30) * MAX).toFixed(2) + 'deg')
+          })
+        }
+      }
+
+      function openPoster() {
+        ensureQRLib(function () { ensureDOM(); populate(); show() })
+      }
+
+      /* ---------- 自动落库：#eval-result 第一次变可见时，自动无刷新提交一次 ---------- */
+      /* 用骨架的 buildAnswers() 取答案、submitAndStay 落库（都 feature-detect）。LLM 只要"把结果页显示出来"，
+         落库就自动发生，无需写任何提交代码——也别再用 submit()/submitSurvey 落库（那会跳走宿主完成页）。 */
+      var _persisted = false
+      function persist() {
+        if (_persisted) return
+        var B = window.SurveyDataBridge
+        if (!B || typeof B.submitAndStay !== 'function' || typeof window.buildAnswers !== 'function') return
+        _persisted = true
+        try { B.submitAndStay({ answers: window.buildAnswers(), evalResult: window.__WJ_EVAL_RESULT__ }) } catch (e) {}
+      }
+      function elVisible(el) {
+        try { var cs = window.getComputedStyle(el); return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0 } catch (e) { return false }
+      }
+      function autoPersist() {
+        var res = $('eval-result'); if (!res) return
+        function chk() { if (elVisible(res)) persist() }
+        try { new MutationObserver(chk).observe(res, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] }) } catch (e) {}
+        document.addEventListener('click', function () { setTimeout(chk, 400) }, true)   // 结果常由点击切出，兜底再查一次
+        chk()
+      }
+
+      function bind() {
+        var copy = $('eval-copy')
+        if (copy && !copy._wjBound) {
+          copy._wjBound = true
+          copy.addEventListener('click', function () {
+            var title = txt('eval-result-title'), url = shareUrl()
+            var text = '我测出来是「' + (title || '') + '」！快来测测你是哪种 → ' + (url || '问卷派搜这个测试')
+            copyText(text, copy)
+          })
+        }
+        var poster = $('eval-poster')
+        if (poster && !poster._wjBound) { poster._wjBound = true; poster.addEventListener('click', openPoster) }
+        autoPersist()
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind()
+      window.WJEvalShare = { bind: bind, open: openPoster, copyText: copyText, shareUrl: shareUrl, persist: persist }
+    })()
+    /* ===== EVAL_SHARE END ===== */
+  </script>

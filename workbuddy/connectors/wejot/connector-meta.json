@@ -1,0 +1,24 @@
+{
+  "name": "WeJot",
+  "name_zh": "WeJot",
+  "name_en": "WeJot",
+  "description": "Create, edit, and analyze surveys and AI interviews with WeJot.",
+  "description_zh": "通过自然语言创建、编辑和分析问卷与 AI 访谈。",
+  "description_en": "Create, edit, and analyze surveys and AI interviews with WeJot.",
+  "source": "wejot",
+  "type": "mcp",
+  "version": "1.0.0",
+  "minWorkbuddyVersion": "5.5.6",
+  "examples_zh": [
+    "帮我创建一份员工满意度问卷",
+    "为这份问卷设计跳题逻辑",
+    "帮我创建一份产品体验 AI 访谈",
+    "分析我最近一次问卷的回收数据"
+  ],
+  "examples_en": [
+    "Create an employee satisfaction survey",
+    "Add branching logic to this survey",
+    "Create an AI interview about the product experience",
+    "Analyze responses from my latest survey"
+  ]
+}

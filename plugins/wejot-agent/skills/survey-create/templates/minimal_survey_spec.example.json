@@ -1,0 +1,155 @@
+{
+  "survey": {
+    "title": "All question types example survey",
+    "description": "Minimal configuration demonstrating standard and custom question types"
+  },
+  "questions": [
+    {
+      "title": "Have you used this product in the past week?",
+      "type": "RADIO",
+      "required": true,
+      "page": 1,
+      "code": "used_product_last_week",
+      "description": "Screens recent users",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "otherOption": false
+    },
+    {
+      "title": "How often do you use this product?",
+      "type": "RADIO",
+      "required": true,
+      "page": 1,
+      "code": "usage_frequency",
+      "description": "Single-choice example with an Other option",
+      "options": [
+        "Daily",
+        "Weekly",
+        "Monthly"
+      ],
+      "otherOption": true
+    },
+    {
+      "title": "Which areas would you like us to improve first?",
+      "type": "CHECKBOX",
+      "required": false,
+      "page": 1,
+      "code": "improvement_priorities",
+      "description": "Multi-select; collects priority directions",
+      "options": [
+        "Feature stability",
+        "Page speed",
+        "Interaction experience"
+      ],
+      "minChoices": 1,
+      "maxChoices": 3
+    },
+    {
+      "title": "Briefly describe the feature you most want us to add",
+      "type": "TEXTAREA",
+      "required": false,
+      "page": 1,
+      "code": "expected_new_feature",
+      "description": "Collects open suggestions",
+      "placeholder": "Please enter your thoughts",
+      "minLength": 0,
+      "maxLength": 500
+    },
+    {
+      "title": "Please upload a screenshot of the issue (optional)",
+      "type": "UPLOAD",
+      "required": false,
+      "page": 1,
+      "code": "issue_screenshot",
+      "description": "Helps locate the issue",
+      "maxFileCount": 2,
+      "maxFileSize": 102400,
+      "fileTypes": [
+        "jpg",
+        "jpeg",
+        "png",
+        "pdf"
+      ]
+    },
+    {
+      "title": "How satisfied are you with the overall experience?",
+      "type": "SCALE",
+      "required": true,
+      "page": 2,
+      "code": "overall_satisfaction",
+      "description": "5-point rating question (default 1~5; auto-generated when minScale/maxScale are not written)",
+      "scaleLabels": {
+        "left": "Very dissatisfied",
+        "right": "Very satisfied"
+      }
+    },
+    {
+      "title": "Please rate the following dimensions",
+      "type": "MATRIX_SCALE",
+      "required": false,
+      "page": 2,
+      "code": "dimension_rating",
+      "description": "Multi-dimension satisfaction evaluation",
+      "rows": [
+        "Feature completeness",
+        "Stability",
+        "Ease of use"
+      ],
+      "matrixColumns": [
+        {
+          "title": "1 point",
+          "score": 1,
+          "sort": 1
+        },
+        {
+          "title": "2 points",
+          "score": 2,
+          "sort": 2
+        },
+        {
+          "title": "3 points",
+          "score": 3,
+          "sort": 3
+        },
+        {
+          "title": "4 points",
+          "score": 4,
+          "sort": 4
+        },
+        {
+          "title": "5 points",
+          "score": 5,
+          "sort": 5
+        }
+      ]
+    },
+    {
+      "title": "Please complete a custom interaction question",
+      "type": "GENERIC",
+      "required": false,
+      "page": 2,
+      "code": "custom_interaction_question",
+      "description": "Custom question-type example; read the generic-question skill before writing the spec",
+      "answerKeys": [
+        "answer"
+      ],
+      "userAnswersSample": [
+        {
+          "answer": 10
+        },
+        {
+          "answer": 9
+        },
+        {
+          "answer": 8
+        }
+      ],
+      "genericStyle": ".nps-wrap{display:flex;flex-direction:column;gap:12px;width:100%;max-width:719px;margin:0;padding:0;background:0 0;border-radius:0}.nps-label{font-size:14px;line-height:20px;color:var(--text-secondary,#6b7280)}.nps-scale{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.nps-btn{height:44px;border-radius:22px;border:1px solid var(--line-color,#e5e7eb);background:var(--bg-color,#fff);color:var(--text-primary,#111827);font-size:14px;line-height:1;cursor:pointer;transition:all .2s}.nps-btn:hover{border-color:var(--primary-color,#2563eb)}.nps-btn.is-active{background:var(--primary-color,#2563eb);border-color:var(--primary-color,#2563eb);color:#fff}.nps-tip{font-size:12px;line-height:18px;color:var(--text-tertiary,#9ca3af)}",
+      "genericHtml": "<div class=\"nps-wrap\" role=\"group\" aria-label=\"NPS 0-10\">\\n  <div class=\"nps-label\">0=Not at all likely, 10=Extremely likely</div>\\n  <div class=\"nps-scale\" data-role=\"nps-scale\">\\n    <button type=\"button\" class=\"nps-btn\" data-nps=\"0\" aria-label=\"0\">0</button><button type=\"button\" class=\"nps-btn\" data-nps=\"5\" aria-label=\"5\">5</button><button type=\"button\" class=\"nps-btn\" data-nps=\"10\" aria-label=\"10\">10</button>\\n  </div>\\n  <div class=\"nps-tip\" data-role=\"nps-tip\" aria-live=\"polite\">Please select</div>\\n</div>",
+      "genericScript": "var c=wrapper&&wrapper.querySelector('.gc');if(!c)return;var s=null,sc=c.querySelector('[data-role=\"nps-scale\"]'),tip=c.querySelector('[data-role=\"nps-tip\"]');function getCurrentAnswer(){return typeof s==='number'?{answer:s}:{}}function refreshUI(){var bs=c.querySelectorAll('.nps-btn[data-nps]');for(var i=0;i<bs.length;i++){var v=Number(bs[i].getAttribute('data-nps')),a=v===s;bs[i].classList.toggle('is-active',a);bs[i].setAttribute('aria-pressed',a?'true':'false')}if(tip)tip.textContent=typeof s==='number'?('Selected '+s):'Please select'}if(sc&&!sc._npsBound){sc._npsBound=true;sc.addEventListener('click',function(e){var b=e.target&&e.target.closest('.nps-btn[data-nps]');if(!b)return;s=Number(b.getAttribute('data-nps'));refreshUI();submitAnswer(getCurrentAnswer())})}if(wrapper&&!wrapper._surveyBeforeSubmitBound){wrapper._surveyBeforeSubmitBound=true;window.addEventListener('survey:before-submit',function(){var a=getCurrentAnswer();if(a&&Object.keys(a).length>0)submitAnswer(a)})}refreshUI();",
+      "chartHtml": "<!-- 图表部分 开始 -->\\n<div id=\"chart-no-data\" style=\"text-align:center;color:rgba(0,0,0,.4);padding:24px\">No data</div>\\n<div id=\"chart-content\" style=\"display:none;width:100%\"></div>\\n<script>\\nwindow.renderChart=function(userAnswers,answerKeys){\\n  var key=(answerKeys&&answerKeys[0])||'answer';\\n  var values=(userAnswers||[]).map(function(x){return Number(x[key]);}).filter(function(v){return !Number.isNaN(v);});\\n  var avg=values.length?(values.reduce(function(a,b){return a+b;},0)/values.length).toFixed(2):'0.00';\\n  var content=document.getElementById('chart-content');\\n  if(content)content.innerHTML='<div>Average: '+avg+'</div>';\\n};\\n</script>\\n<!-- 图表部分 结束 -->"
+    }
+  ]
+}

@@ -1,0 +1,1117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI 访谈 question_schema_generate.json 契约",
+  "description": "沙箱内生成/编辑 question_schema_generate.json 的唯一结构契约（自 java_required 同步）。按题型分组数组；survey 与题目含访谈专用字段。禁止根级 questions[] 与 schemaVersion。",
+  "type": "object",
+  "required": [
+    "survey"
+  ],
+  "properties": {
+    "survey": {
+      "type": "object",
+      "description": "AI 访谈问卷配置",
+      "required": [
+        "kind",
+        "title",
+        "description",
+        "welcomeMessage",
+        "outroMessage"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "AI_INTERVIEW"
+          ],
+          "description": "问卷类型，固定为 AI_INTERVIEW"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "问卷标题"
+        },
+        "description": {
+          "type": "string",
+          "description": "问卷描述"
+        },
+        "welcomeMessage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "受访者开场白；须以询问是否方便/是否准备好开始结尾"
+        },
+        "outroMessage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "访谈结束语"
+        },
+        "mediaMode": {
+          "type": "string",
+          "enum": [
+            "text",
+            "audio",
+            "video"
+          ],
+          "default": "video",
+          "description": "默认媒体模式"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2,
+          "description": "访谈语种，如 zh-CN"
+        },
+        "allowedModes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "phone",
+              "chat"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "default": [
+            "phone",
+            "chat"
+          ],
+          "description": "允许的交互模式"
+        },
+        "defaultMode": {
+          "type": "string",
+          "enum": [
+            "phone",
+            "chat"
+          ],
+          "default": "phone",
+          "description": "默认交互模式"
+        },
+        "recording": {
+          "type": "object",
+          "description": "录制配置",
+          "properties": {
+            "audio": {
+              "type": "boolean",
+              "default": true,
+              "description": "是否录制音频"
+            },
+            "video": {
+              "type": "boolean",
+              "default": true,
+              "description": "是否录制视频"
+            }
+          },
+          "default": {
+            "audio": true,
+            "video": true
+          }
+        },
+        "input": {
+          "type": "object",
+          "description": "输入方式配置",
+          "properties": {
+            "keyboard": {
+              "type": "boolean",
+              "default": false,
+              "description": "是否允许键盘输入"
+            }
+          },
+          "default": {
+            "keyboard": false
+          }
+        },
+        "brandInfo": {
+          "type": "object",
+          "description": "品牌信息",
+          "properties": {
+            "brandName": {
+              "type": "string",
+              "maxLength": 30,
+              "description": "品牌名称"
+            },
+            "logoUrl": {
+              "type": "string",
+              "description": "品牌 Logo URL"
+            }
+          },
+          "default": {
+            "brandName": "",
+            "logoUrl": ""
+          }
+        },
+        "background": {
+          "type": "string",
+          "description": "访谈背景说明，供 AI 主持人参考"
+        },
+        "requirements": {
+          "type": "string",
+          "description": "访谈要求与约束，供 AI 主持人参考"
+        }
+      }
+    },
+    "textQuestions": {
+      "type": "array",
+      "description": "文本题目列表，复用普通问卷文本题答题样式",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "INPUT"
+            ],
+            "description": "题目类型，固定为 INPUT"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "description": "追问配置；结构化题通常 mode 为 none",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ],
+                "description": "追问深度"
+              },
+              "logicPrompt": {
+                "type": "string",
+                "description": "mode=logic 时的追问规则"
+              }
+            }
+          }
+        }
+      }
+    },
+    "radioQuestions": {
+      "type": "array",
+      "description": "单选题目列表（对应旧 SINGLE 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "RADIO"
+            ],
+            "description": "题目类型，固定为 RADIO"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "description": "追问配置；结构化题通常 mode 为 none",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ],
+                "description": "追问深度"
+              },
+              "logicPrompt": {
+                "type": "string",
+                "description": "mode=logic 时的追问规则"
+              }
+            }
+          },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "description": "单选选项列表",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "label"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "选项排序值"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "选项显示文本"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "选项说明，无说明时写空字符串"
+                }
+              }
+            }
+          },
+          "otherEnabled": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否启用其它选项"
+          },
+          "otherText": {
+            "type": "string",
+            "description": "其它选项显示文本"
+          }
+        }
+      }
+    },
+    "checkboxQuestions": {
+      "type": "array",
+      "description": "多选题目列表（对应旧 MULTI 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHECKBOX"
+            ],
+            "description": "题目类型，固定为 CHECKBOX"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ]
+              },
+              "logicPrompt": {
+                "type": "string"
+              }
+            }
+          },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "description": "多选选项列表",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "label"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "maxChoices": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "最多选择数量"
+          },
+          "minChoices": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "最少选择数量"
+          },
+          "otherEnabled": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "otherText": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scaleQuestions": {
+      "type": "array",
+      "description": "评分题目列表（对应旧 RATING 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SCALE"
+            ],
+            "description": "题目类型，固定为 SCALE"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ]
+              },
+              "logicPrompt": {
+                "type": "string"
+              }
+            }
+          },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "description": "评分选项列表，与 question_schema 一致；禁止使用 scale/scaleLabels",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "score",
+                "title"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer"
+                },
+                "score": {
+                  "type": "integer",
+                  "description": "评分值；按 sort 升序必须从 1 开始、连续且严格递增，且分数越高选项语义越正向"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "matrixScaleQuestions": {
+      "type": "array",
+      "description": "矩阵评分题目列表（对应旧 MATRIX_RATING 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "columns",
+          "rows"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MATRIX_SCALE"
+            ],
+            "description": "题目类型，固定为 MATRIX_SCALE"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ]
+              },
+              "logicPrompt": {
+                "type": "string"
+              }
+            }
+          },
+          "columns": {
+            "type": "array",
+            "minItems": 1,
+            "description": "矩阵列（评分维度）",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "score"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "columnTitle"
+                  ]
+                },
+                {
+                  "required": [
+                    "title"
+                  ]
+                },
+                {
+                  "required": [
+                    "label"
+                  ]
+                }
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer"
+                },
+                "score": {
+                  "type": "number"
+                },
+                "columnTitle": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "description": "矩阵行（评分项）",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "rowTitle"
+                  ]
+                },
+                {
+                  "required": [
+                    "title"
+                  ]
+                },
+                {
+                  "required": [
+                    "label"
+                  ]
+                }
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer"
+                },
+                "rowTitle": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "uploadQuestions": {
+      "type": "array",
+      "description": "文件上传题目列表（对应旧 FILE 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "UPLOAD"
+            ],
+            "description": "题目类型，固定为 UPLOAD"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ]
+              },
+              "logicPrompt": {
+                "type": "string"
+              }
+            }
+          },
+          "accept": {
+            "type": "string",
+            "description": "允许的文件 MIME 类型，访谈常用写法，如 */*"
+          },
+          "maxFileCount": {
+            "type": "integer",
+            "description": "最多上传文件数量"
+          },
+          "maxFileSize": {
+            "type": "integer",
+            "description": "单文件最大大小（KB）"
+          },
+          "fileTypes": {
+            "type": "array",
+            "description": "允许上传的文件扩展名",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "interviewQuestions": {
+      "type": "array",
+      "description": "开放式访谈题目列表（对应旧 INTERVIEW 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "followup"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "INTERVIEW"
+            ],
+            "description": "题目类型，固定为 INTERVIEW"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "interviewGuide": {
+            "type": "string",
+            "description": "引导语别名，兼容旧字段；优先使用 guide"
+          },
+          "questionGuide": {
+            "type": "string",
+            "description": "引导语别名，兼容旧字段；优先使用 guide"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ],
+                "description": "追问深度"
+              },
+              "logicPrompt": {
+                "type": "string",
+                "description": "mode=logic 时的追问规则"
+              }
+            }
+          },
+          "followUpDepth": {
+            "type": "string",
+            "enum": [
+              "none",
+              "one",
+              "two_three",
+              "open",
+              "logic"
+            ],
+            "description": "追问深度别名，兼容旧字段；优先使用 followup.mode"
+          },
+          "followupDepth": {
+            "type": "string",
+            "enum": [
+              "none",
+              "one",
+              "two_three",
+              "open",
+              "logic"
+            ],
+            "description": "追问深度别名，兼容旧字段；优先使用 followup.mode"
+          },
+          "logicPrompt": {
+            "type": "string",
+            "description": "追问规则别名，兼容旧字段；优先使用 followup.logicPrompt"
+          },
+          "followUpLogicPrompt": {
+            "type": "string",
+            "description": "追问规则别名，兼容旧字段；优先使用 followup.logicPrompt"
+          }
+        }
+      }
+    },
+    "interactiveQuestions": {
+      "type": "array",
+      "description": "互动/视觉访谈题目列表（对应旧 INTERACTIVE 题型）",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "followup"
+        ],
+        "properties": {
+          "displayMedia": {
+            "$ref": "#/definitions/displayMedia"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "题目名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "题目说明"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "题目唯一标识"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "是否必填：1=必填，0=非必填"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "题目排序值"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "INTERACTIVE"
+            ],
+            "description": "题目类型，固定为 INTERACTIVE"
+          },
+          "condition": {
+            "type": "string",
+            "description": "显示条件表达式"
+          },
+          "guide": {
+            "type": "string",
+            "description": "AI 主持人引导语"
+          },
+          "interviewGuide": {
+            "type": "string",
+            "description": "引导语别名，兼容旧字段"
+          },
+          "questionGuide": {
+            "type": "string",
+            "description": "引导语别名，兼容旧字段"
+          },
+          "followup": {
+            "type": "object",
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "one",
+                  "two_three",
+                  "open",
+                  "logic"
+                ]
+              },
+              "logicPrompt": {
+                "type": "string"
+              }
+            }
+          },
+          "followUpDepth": {
+            "type": "string",
+            "enum": [
+              "none",
+              "one",
+              "two_three",
+              "open",
+              "logic"
+            ]
+          },
+          "followupDepth": {
+            "type": "string",
+            "enum": [
+              "none",
+              "one",
+              "two_three",
+              "open",
+              "logic"
+            ]
+          },
+          "logicPrompt": {
+            "type": "string"
+          },
+          "followUpLogicPrompt": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "displayMedia": {
+      "type": "array",
+      "description": "题目展示素材,可选，编辑后原样保留；通常是用户手动添加，不需要你来填充这个字段",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "url": { "type": "string" },
+          "name": { "type": "string" },
+          "size": { "type": "integer" },
+          "width": { "type": "integer" },
+          "height": { "type": "integer" },
+          "mimeType": { "type": "string" },
+          "coverUrl": { "type": "string" }
+        }
+      }
+    }
+  }
+}

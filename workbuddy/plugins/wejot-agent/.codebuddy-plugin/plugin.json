@@ -1,0 +1,10 @@
+{
+  "name": "wejot-agent",
+  "version": "0.1.5",
+  "description": "Design, create, revise, validate, and submit WeJot surveys and AI interviews; retrieve, clean, and analyze response data with specialized logic and components.",
+  "author": {
+    "name": "WeJot"
+  },
+  "repository": "https://github.com/wejot-pro/wejot-plugin.git",
+  "keywords": ["survey", "research", "mcp"]
+}

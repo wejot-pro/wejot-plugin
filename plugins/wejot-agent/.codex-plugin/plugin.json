@@ -1,0 +1,25 @@
+{
+  "name": "wejot-agent",
+  "version": "0.1.4",
+  "description": "Design, create, revise, validate, and submit WeJot surveys and AI interviews; retrieve, clean, and analyze response data with specialized logic and components.",
+  "author": {
+    "name": "WeJot"
+  },
+  "repository": "https://github.com/wejot-pro/wejot-plugin.git",
+  "keywords": ["survey", "research", "mcp"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "WeJot Agent",
+    "shortDescription": "Create surveys and analyze WeJot responses",
+    "longDescription": "Design research, create and revise surveys or AI interviews, implement logic and specialized components, validate and submit artifacts, retrieve response data, and perform auditable cleaning, statistical analysis, and text analysis through WeJot MCP workflows.",
+    "developerName": "WeJot",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Create a WeJot survey from this brief.",
+      "Update my current WeJot survey.",
+      "Open the submitted survey in the editor."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

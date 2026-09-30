@@ -1,0 +1,20 @@
+{
+  "name": "wejot",
+  "interface": {
+    "displayName": "WeJot"
+  },
+  "plugins": [
+    {
+      "name": "wejot-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/wejot-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

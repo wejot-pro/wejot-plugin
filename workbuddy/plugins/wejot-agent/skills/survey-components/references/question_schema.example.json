@@ -1,0 +1,223 @@
+{
+  "survey": {
+    "title": "Test new template",
+    "description": "Bicycle survey questionnaire"
+  },
+  "radioQuestions": [
+    {
+      "title": "What is your main purpose for using a bicycle?",
+      "description": "",
+      "uuid": "019c465d81ab71d29498ea78cd7f8bac",
+      "type": "RADIO",
+      "required": 0,
+      "sort": 1000,
+      "options": [
+        {
+          "sort": 1,
+          "label": "Commuting"
+        },
+        {
+          "sort": 2,
+          "label": "Fitness"
+        }
+      ],
+      "code": "primary_bike_usage_purpose"
+    }
+  ],
+  "checkboxQuestions": [
+    {
+      "title": "Which factors do you consider when choosing a bicycle? (multi-select)",
+      "description": "",
+      "uuid": "019c465d81ab71d29498ec534ba5fd3e",
+      "type": "CHECKBOX",
+      "required": 0,
+      "sort": 2000,
+      "options": [
+        {
+          "sort": 1,
+          "label": "Price"
+        },
+        {
+          "sort": 2,
+          "label": "Brand"
+        },
+        {
+          "sort": 3,
+          "label": "Quality"
+        }
+      ],
+      "maxChoices": 5,
+      "minChoices": 1,
+      "code": "bike_purchase_factors"
+    }
+  ],
+  "textQuestions": [
+    {
+      "title": "Describe the features your ideal bicycle should have.",
+      "description": "",
+      "uuid": "019c465d81ab71d29498f0474d18d888",
+      "type": "TEXTAREA",
+      "required": 0,
+      "sort": 3000,
+      "minLength": 0,
+      "maxLength": 255,
+      "defaultValue": "",
+      "placeholder": "Please enter...",
+      "code": "ideal_bike_features"
+    }
+  ],
+  "uploadQuestions": [
+    {
+      "title": "Please upload a photo of the bicycle you currently use (optional)",
+      "description": "",
+      "uuid": "019c465d81ab71d29498f6033bc5541c",
+      "type": "UPLOAD",
+      "required": 0,
+      "sort": 4000,
+      "maxFileCount": 1,
+      "maxFileSize": 102400,
+      "fileTypes": [
+        "jpg",
+        "jpeg",
+        "gif",
+        "png",
+        "bmp",
+        "zip",
+        "rar",
+        "mp3",
+        "mp4",
+        "mov",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "csv",
+        "ppt",
+        "pptx",
+        "pdf"
+      ],
+      "code": "current_bike_photo"
+    }
+  ],
+  "scaleQuestions": [
+    {
+      "title": "How satisfied are you overall with bicycles currently on the market?",
+      "description": "",
+      "uuid": "019c465d81ab71d29498f8c24b71ae45",
+      "type": "SCALE",
+      "required": 0,
+      "sort": 5000,
+      "options": [
+        {
+          "sort": 1,
+          "score": 1.0,
+          "title": "Very dissatisfied"
+        },
+        {
+          "sort": 2,
+          "score": 2.0,
+          "title": "Dissatisfied"
+        },
+        {
+          "sort": 3,
+          "score": 3.0,
+          "title": "Neutral"
+        },
+        {
+          "sort": 4,
+          "score": 4.0,
+          "title": "Satisfied"
+        },
+        {
+          "sort": 5,
+          "score": 5.0,
+          "title": "Very satisfied"
+        }
+      ],
+      "code": "bike_market_satisfaction"
+    }
+  ],
+  "matrixScaleQuestions": [
+    {
+      "title": "Please rate the following bicycle-related services",
+      "description": "",
+      "uuid": "019c465d81ab71d29498fc4728913029",
+      "type": "MATRIX_SCALE",
+      "required": 0,
+      "sort": 6000,
+      "columns": [
+        {
+          "title": "Very dissatisfied",
+          "score": 1.0,
+          "sort": 1
+        },
+        {
+          "title": "Dissatisfied",
+          "score": 2.0,
+          "sort": 2
+        },
+        {
+          "title": "Neutral",
+          "score": 3.0,
+          "sort": 3
+        },
+        {
+          "title": "Satisfied",
+          "score": 4.0,
+          "sort": 4
+        },
+        {
+          "title": "Very satisfied",
+          "score": 5.0,
+          "sort": 5
+        }
+      ],
+      "rows": [
+        {
+          "title": "After-sales service",
+          "sort": 1
+        },
+        {
+          "title": "Maintenance and repair",
+          "sort": 2
+        }
+      ],
+      "code": "bike_service_rating"
+    }
+  ],
+  "genericQuestions": [
+    {
+      "title": "Question title",
+      "description": "",
+      "uuid": "019c465d81ab71d29498ec534ba5fdds",
+      "type": "GENERIC",
+      "required": 0,
+      "sort": 7000,
+      "answerKeys": [
+        "answer"
+      ],
+      "userAnswersSample": [
+        {
+          "answer": 10
+        },
+        {
+          "answer": 9
+        },
+        {
+          "answer": 8
+        },
+        {
+          "answer": 7
+        },
+        {
+          "answer": 5
+        },
+        {
+          "answer": 3
+        }
+      ],
+      "chartHtml": "<!--\n========== This string holds the custom statistics chart code. Only output the HTML from「图表部分 开始」to「图表部分 结束」; do not output the comment section below. ==========\nComment start\n - Purpose: this string is inserted into the questionnaire statistics page (host page) to render the custom question type's statistics chart.\n - Forbidden: must NOT contain <!doctype>, <html>, <head>, <body>, or framework-region script (hasData/applyData, #chart-data-json parsing, etc.); no comments inside the code.\n - Must keep: the two divs #chart-no-data and #chart-content below, and the <script> defining window.renderChart(userAnswers, answerKeys).\n - renderChart: the framework calls it automatically when data exists. Parameters: userAnswers=array of user answer objects (each element is a key-value object; keys are the names in answerKeys, values are the answer values, possibly objects, matching your designed submission data), answerKeys=array of submission keys (matching your designed submission data keys); container show/hide and data parsing are handled by the framework.\n - **Encoding requirements (important!):** strictly follow the **Custom Question Type - Custom Statistics Chart Spec** section in the survey-components SKILL for rendering approach, decision logic, design constraints, and hard limits.\nComment end\n-->\n<!-- 图表部分 开始 -->\n<div id=\"chart-no-data\" style=\"text-align: center; color: rgba(0, 0, 0, 0.4); padding: 24px;\">No data</div>\n<div id=\"chart-content\" style=\"display: none; width: 100%;\">\n    <!--\n      Write the chart HTML here (no title etc.; only a suitable chart)\n    -->\n</div>\n<script>\n  window.renderChart = function(userAnswers, answerKeys) {\n    /*\n      Write logic here to render HTML from userAnswers and answerKeys; handle invalid data cases, e.g. 0 as a divisor\n    */\n  };\n</script>\n<!-- 图表部分 结束 -->",
+      "code": "custom_generic_question"
+    }
+  ]
+}

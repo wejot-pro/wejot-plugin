@@ -1,0 +1,28 @@
+{
+  "intro": {
+    "title": "多选组合规则测验",
+    "sub": "请根据题目要求选择，系统自动判分",
+    "notices": [
+      "共 3 道 CHECKBOX 题",
+      "按组合规则计分：所列题均选满全部选项才命中高分规则",
+      "rules 只写题 code（如 Q1），勿写 Q1_opt_1"
+    ],
+    "chips": ["客观题"]
+  },
+  "display": {
+    "layout": "scroll",
+    "showResultToUser": true,
+    "thanksText": "感谢您的作答，问卷已提交。"
+  },
+  "scoring": {
+    "model": "rules",
+    "autoExcludeTypes": ["TEXTAREA", "UPLOAD"],
+    "rules": [
+      { "when": { "everyAllOptionsSelected": ["Q1", "Q2", "Q3"] }, "score": 10 },
+      { "when": { "countAllOptionsSelected": { "among": ["Q1", "Q2", "Q3"], "equals": 2 } }, "score": 6 },
+      { "when": { "everyNoneSelected": ["Q1", "Q2", "Q3"] }, "score": 0 },
+      { "when": "default", "score": 3 }
+    ]
+  },
+  "evalResult": { "format": "score" }
+}

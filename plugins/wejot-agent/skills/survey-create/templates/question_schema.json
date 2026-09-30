@@ -1,0 +1,662 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Questionnaire Artifact JSON Schema",
+  "description": "Structural validation rules for question_schema_generate.json; describes structure only, no business example data.",
+  "type": "object",
+  "required": [
+    "survey"
+  ],
+  "properties": {
+    "survey": {
+      "type": "object",
+      "description": "Survey base info",
+      "required": [
+        "title",
+        "description"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Questionnaire title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Questionnaire description"
+        }
+      }
+    },
+    "radioQuestions": {
+      "type": "array",
+      "description": "Single-choice question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "RADIO"
+            ],
+            "description": "Question type, fixed to RADIO"
+          },
+          "options": {
+            "type": "array",
+            "description": "Single-choice option list",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "label"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "Option sort value"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Option display text, unique within the question"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Option description; write empty string when none"
+                }
+              }
+            }
+          },
+          "otherEnabled": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether the Other option is enabled"
+          },
+          "otherText": {
+            "type": "string",
+            "description": "Display text of the Other option"
+          }
+        }
+      }
+    },
+    "checkboxQuestions": {
+      "type": "array",
+      "description": "Multi-select question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CHECKBOX"
+            ],
+            "description": "Question type, fixed to CHECKBOX"
+          },
+          "options": {
+            "type": "array",
+            "description": "Multi-select option list",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "label"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "Option sort value"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Option display text, unique within the question"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Option description; write empty string when none"
+                }
+              }
+            }
+          },
+          "maxChoices": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Max selectable count"
+          },
+          "minChoices": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Min selectable count"
+          },
+          "otherEnabled": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether the Other option is enabled"
+          },
+          "otherText": {
+            "type": "string",
+            "description": "Display text of the Other option"
+          }
+        }
+      }
+    },
+    "textQuestions": {
+      "type": "array",
+      "description": "Text input question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "minLength",
+          "maxLength"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TEXTAREA"
+            ],
+            "description": "Question type, fixed to TEXTAREA"
+          },
+          "minLength": {
+            "type": "integer",
+            "description": "Min input text length"
+          },
+          "maxLength": {
+            "type": "integer",
+            "description": "Max input text length"
+          },
+          "defaultValue": {
+            "type": "string",
+            "description": "Input default value"
+          },
+          "placeholder": {
+            "type": "string",
+            "description": "Input placeholder copy"
+          }
+        }
+      }
+    },
+    "uploadQuestions": {
+      "type": "array",
+      "description": "File upload question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "maxFileCount",
+          "maxFileSize",
+          "fileTypes"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "UPLOAD"
+            ],
+            "description": "Question type, fixed to UPLOAD"
+          },
+          "maxFileCount": {
+            "type": "integer",
+            "description": "Max upload file count"
+          },
+          "maxFileSize": {
+            "type": "integer",
+            "description": "Max size per file (KB)"
+          },
+          "fileTypes": {
+            "type": "array",
+            "description": "Allowed upload file types",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "scaleQuestions": {
+      "type": "array",
+      "description": "Rating question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "options"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SCALE"
+            ],
+            "description": "Question type, fixed to SCALE"
+          },
+          "options": {
+            "type": "array",
+            "description": "Rating option list",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "score",
+                "title"
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "Option sort value"
+                },
+                "score": {
+                  "type": "number",
+                  "description": "Score value"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Rating option text"
+                }
+              }
+            }
+          },
+          "scaleLabels": {
+            "type": "object",
+            "description": "Rating endpoint hint copy",
+            "properties": {
+              "left": {
+                "type": "string"
+              },
+              "right": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "matrixScaleQuestions": {
+      "type": "array",
+      "description": "Matrix rating question list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "columns",
+          "rows"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "MATRIX_SCALE"
+            ],
+            "description": "Question type, fixed to MATRIX_SCALE"
+          },
+          "columns": {
+            "type": "array",
+            "description": "Matrix columns (rating dimensions)",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort",
+                "score"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "columnTitle"
+                  ]
+                },
+                {
+                  "required": [
+                    "title"
+                  ]
+                }
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "Column sort value"
+                },
+                "score": {
+                  "type": "number",
+                  "description": "Column score value"
+                },
+                "columnTitle": {
+                  "type": "string",
+                  "description": "Column title; field output by the current generation script"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Column title; legacy-artifact-compatible field"
+                }
+              }
+            }
+          },
+          "rows": {
+            "type": "array",
+            "description": "Matrix rows (rated items)",
+            "items": {
+              "type": "object",
+              "required": [
+                "sort"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "rowTitle"
+                  ]
+                },
+                {
+                  "required": [
+                    "title"
+                  ]
+                }
+              ],
+              "properties": {
+                "sort": {
+                  "type": "integer",
+                  "description": "Row sort value"
+                },
+                "rowTitle": {
+                  "type": "string",
+                  "description": "Row title; field output by the current generation script"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Row title; legacy-artifact-compatible field"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "genericQuestions": {
+      "type": "array",
+      "description": "Custom question-type list",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "code",
+          "uuid",
+          "type",
+          "required",
+          "sort",
+          "answerKeys",
+          "chartHtml"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Question description"
+          },
+          "code": {
+            "type": "string",
+            "description": "Question code, unique within the questionnaire"
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Question unique identifier"
+          },
+          "required": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Whether required: 1=required, 0=optional"
+          },
+          "sort": {
+            "type": "integer",
+            "description": "Question sort value"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "GENERIC"
+            ],
+            "description": "Question type, fixed to GENERIC"
+          },
+          "answerKeys": {
+            "type": "array",
+            "description": "Answer key list",
+            "items": {
+              "type": "string"
+            }
+          },
+          "userAnswersSample": {
+            "type": "array",
+            "description": "Sample answers for debugging the custom question statistics chart"
+          },
+          "chartHtml": {
+            "type": "string",
+            "description": "Custom statistics chart HTML snippet"
+          },
+          "genericStyle": {
+            "type": "string",
+            "description": "Custom question style"
+          },
+          "genericHtml": {
+            "type": "string",
+            "description": "Custom question DOM snippet"
+          },
+          "genericScript": {
+            "type": "string",
+            "description": "Custom question interaction & submit script"
+          }
+        }
+      }
+    }
+  }
+}

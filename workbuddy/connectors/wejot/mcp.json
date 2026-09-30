@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "wejot": {
+      "type": "streamableHttp",
+      "url": "https://wejot-backend-user-test.xiaotunqifu.com/mcp",
+      "timeout": 30000
+    }
+  }
+}
