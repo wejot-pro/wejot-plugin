@@ -10,15 +10,13 @@
   "version": "1.0.0",
   "minWorkbuddyVersion": "5.5.6",
   "examples_zh": [
-    "帮我创建一份员工满意度问卷，三道题，题目你自行设计，直接发布，不用问我问题",
-    "为这份问卷设计跳题逻辑",
-    "帮我创建一份产品体验 AI 访谈",
+    "帮我创建一份填答式员工满意度问卷，题目你自行设计，直接发布，不用问我问题",
+    "帮我创建一份产品体验 AI 访谈，题目你自行设计，直接发布，不用问我问题",
     "分析我最近一次问卷的回收数据"
   ],
   "examples_en": [
-    "Create a three-question employee satisfaction survey, design the questions yourself, and publish it directly without asking me any questions",
-    "Add branching logic to this survey",
-    "Create an AI interview about the product experience",
+    "Create a standard employee satisfaction survey, design the questions yourself, and publish it directly without asking me any questions",
+    "Create a product experience AI interview, design the questions yourself, and publish it directly without asking me any questions",
     "Analyze responses from my latest survey"
   ]
 }
