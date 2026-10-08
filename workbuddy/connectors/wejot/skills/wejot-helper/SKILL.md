@@ -36,4 +36,4 @@ Use the exact URLs below when the user asks to open or share an official page. C
 | Privacy policy | https://wj.pro/h5/pages/user-center/privacy-policy/index |
 | Product documentation | https://doc.wj.pro/zh-CN |
 
-For individual knowledge articles, survey templates, and other localized subpages, get the exact current URL from `https://wj.pro/sitemap_index.xml` (all languages) or `https://wj.pro/__sitemap__/zh-CN.xml` (Simplified Chinese). Do not construct a detail-page URL from a title. The documentation subpages are listed at `https://doc.wj.pro/sitemap.xml`.
+For individual knowledge articles, survey templates, and other localized subpages, use the bundled URL list in `references/official-site-urls.md`. Check `https://wj.pro/sitemap_index.xml` (all languages) or `https://wj.pro/__sitemap__/zh-CN.xml` (Simplified Chinese) before sharing a detail-page URL when freshness matters. Do not construct one from a title. The documentation subpages are listed at `https://doc.wj.pro/sitemap.xml`.
