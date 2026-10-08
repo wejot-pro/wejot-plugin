@@ -40,14 +40,13 @@ The included profile_data.py and apply_cleaning.py scripts are optional determin
    - Keep stable identifiers, evidence, confidence, privacy treatment, and independent review of borderline exclusions.
    - Merge findings into a review list; do not let semantic reviewers mutate the dataset.
 
-5. Obtain disposition and optionally invalidate
+5. Obtain disposition
    - Show the user affected serials, evidence, and the proposed keep/exclude/change decision.
    - Apply only the decisions the user confirms.
-   - For WeJot server-side invalidation, call invalidateSurveyAnswers only after confirmation and pass the serial list. The operation marks records invalid rather than physically deleting them.
-   - Honor the returned success, statusCode, invalidatedCount, and message. Do not blindly retry business-limit, deadline, permission, or recovery-capacity failures.
+   - Record confirmed exclusions in the cleaned output and audit artifact. Do not change the remote response status as part of this workflow.
 
 6. Deliver
    - Return a cleaned copy, the confirmed rule configuration, and an audit log.
    - Report original and retained counts, exclusion rate, rule-level impact, constrained checks, material distribution changes, and remaining quality risks.
 
-Never fabricate data, silently reuse stale data, physically delete the raw source, hide uncertain cases inside a threshold, or claim a server-side invalidation when the service did not confirm it.
+Never fabricate data, silently reuse stale data, physically delete the raw source, hide uncertain cases inside a threshold, or claim that a remote response status changed.
