@@ -5,7 +5,7 @@ description: Create or revise conventional WeJot standard/free-mode survey draft
 
 # Survey Create
 
-Turn the user's research brief into a Java-persistable conventional survey draft. This skill package ships the templates, references, and optional local scripts needed to produce the required four-artifact bundle. The host-driven lifecycle in `wejot-plugin-basics` owns project state and publication.
+Turn the user's research brief into a Java-persistable conventional survey draft. This skill package ships the templates, references, and optional local scripts needed to produce the required four-artifact bundle. The shared lifecycle in `wejot-authoring-lifecycle` owns project state and publication.
 
 ## Skill package layout
 
@@ -143,7 +143,7 @@ Survey surface collects answers; heavy post-hoc scoring belongs in `data-analysi
 - One session → one active survey.
 - Do not fabricate unsupported schema fields or host capabilities.
 - Keep private transport and deployment implementation details outside artifacts and skill instructions.
-- On version, lock, validation, or persistence errors, follow `wejot-plugin-basics`.
+- On version, lock, validation, or persistence errors, follow `wejot-authoring-lifecycle`.
 
 ## Persist answers and stay in the survey
 

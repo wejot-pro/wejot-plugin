@@ -1,11 +1,11 @@
 ---
-name: wejot-plugin-basics
-description: Establish or recover a WeJot plugin authoring session and preserve the host-driven pull, local-edit, version-check, and submit lifecycle for traditional surveys and AI interviews.
+name: wejot-authoring-lifecycle
+description: Preserve the shared WeJot project, pull, local-edit, version-check, upload, and publication lifecycle after the current host has connected the WeJot MCP server.
 ---
 
-# WeJot Plugin Basics
+# WeJot Authoring Lifecycle
 
-Use this skill for first use, project recovery, survey switching, version conflicts, locks, or submission failures. It defines the lifecycle boundary; questionnaire content belongs to `survey-create` or `ai-interview-create`.
+Use this skill after the current host has loaded and authenticated the WeJot MCP server. Use it for project recovery, survey switching, version conflicts, locks, or submission failures. It defines the shared authoring lifecycle; installation and authentication belong to the current host adapter, while questionnaire content belongs to `survey-create` or `ai-interview-create`.
 
 ## Core state model
 

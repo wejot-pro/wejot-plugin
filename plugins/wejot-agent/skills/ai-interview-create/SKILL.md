@@ -14,7 +14,7 @@ Read before constructing or reviewing the schema:
 - [references/interview-schema.md](references/interview-schema.md) for the portable field guide.
 - [references/interview_schema.json](references/interview_schema.json) for the complete structural contract.
 
-The included scripts/generate_interview_survey.py normalizes the schema and derives the required lightweight HTML/CSS/JS companions; scripts/validate_interview_survey.py validates a manually edited draft. Run them against the host-selected draft workspace. The resulting publication bundle still follows the host-driven lifecycle in wejot-plugin-basics.
+The included scripts/generate_interview_survey.py normalizes the schema and derives the required lightweight HTML/CSS/JS companions; scripts/validate_interview_survey.py validates a manually edited draft. Run them against the host-selected draft workspace. The resulting publication bundle still follows `wejot-authoring-lifecycle`.
 
 ## Pull and regeneration contract
 
@@ -84,7 +84,7 @@ Infer ordinary product details rather than delaying a well-specified request:
 
 ## Create and edit workflow
 
-1. Let the host establish or pull the current project through wejot-plugin-basics.
+1. Let the host establish or pull the current project through `wejot-authoring-lifecycle`.
 2. For a new interview, build the schema from the user’s topic, objectives, question count, and explicit constraints using the internal references above.
 3. For an existing interview, start from the pulled JSON even when its CSS or JS companions are empty. Patch only the requested fields. Preserve UUIDs, sort order, types, requiredness, conditions, follow-up policies, modes, recording settings, service-normalized metadata, and other non-target fields unless the user asks to redesign them.
 4. Run generate_interview_survey.py against the draft workspace to normalize the JSON and regenerate HTML, CSS, and JS. If a generated companion was then manually edited without regeneration, run validate_interview_survey.py.

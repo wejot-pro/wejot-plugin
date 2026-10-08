@@ -1,6 +1,6 @@
 ---
 name: survey-design
-description: Turn an ambiguous survey or research idea into a methodologically sound, explicitly confirmed WeJot design brief before conventional-survey or AI-interview artifacts are generated.
+description: Use only when the user explicitly asks to design or refine survey research objectives, methodology, or a design brief. Do not invoke for ordinary survey creation or revision unless the user requests this upstream design step.
 ---
 
 # Survey Design
