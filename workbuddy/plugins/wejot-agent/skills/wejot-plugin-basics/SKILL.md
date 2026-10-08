@@ -1,11 +1,11 @@
 ---
 name: wejot-plugin-basics
-description: Establish or recover the WeJot normal plugin and its MCP account connection in WorkBuddy before using shared WeJot workflows.
+description: Establish or recover the WeJot normal plugin and MCP connection in WorkBuddy, and handle external-browser preview of published voice interviews.
 ---
 
 # WeJot normal plugin in WorkBuddy
 
-Use this skill when the WeJot normal plugin was installed or updated, its Skills or MCP tools are not visible, or WorkBuddy reports that the bundled WeJot MCP server needs authentication.
+Use this skill when the WeJot normal plugin was installed or updated, its Skills or MCP tools are not visible, WorkBuddy reports that the bundled WeJot MCP server needs authentication, or a published voice interview needs preview handoff.
 
 ## Confirmed host behavior
 
@@ -27,3 +27,7 @@ The exact marketplace and connection button labels can vary by WorkBuddy build. 
 Repository maintainers still need to record the exact current UI path and labels after a real normal-plugin installation and OAuth acceptance run. Until that evidence is added, keep guidance state-based rather than button-based.
 
 If authentication is cancelled, expired, or denied, stop the protected operation and ask the user to reconnect. Never ask the user to paste tokens, cookies, authorization codes, or API keys into the chat.
+
+## Voice interview preview
+
+After publishing a voice interview and opening its `editor_url` in WorkBuddy's built-in browser, remind the user that microphone access may be unavailable there. Also open that exact URL in an external browser if the host can; otherwise give the user the clickable URL and ask them to open it externally. Have the user run the interview preview there to check microphone and voice behavior; loading the editor page alone does not verify them.

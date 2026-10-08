@@ -34,6 +34,7 @@ The host owns all service interaction. Skills and helper scripts may prepare or 
    - let the host upload the unchanged bundle using the returned upload instruction;
    - call `submitSurveyArtifacts` with the same session, baseline, hash, size, and optional header image.
 6. Treat `submitSurveyArtifacts.success=true` and the returned new version as the publication boundary. Fetch metadata afterward only to verify the result; do not overwrite the just-submitted local draft.
+7. After successful publication, open that submission's `editor_url` in the host's built-in browser when available, so the user can preview and edit the published version. Otherwise use the host's URL-opening capability; if neither is available, provide the exact URL as a clickable link. Follow the current host adapter for preview limitations. Do not reconstruct or replace the URL. If opening fails, report the handoff failure and the URL; do not submit again.
 
 The Java service requires the bundle to contain exactly these basenames at archive root: `survey-unified-generate.html`, `survey-ui.css`, `survey-ui.js`, and `question_schema_generate.json`. HTML must reference `survey-ui.css` and `survey-ui.js`. The service validates the bundle during submission; there is no separate public artifact-validation tool. Local validators are therefore useful preflight checks, not substitutes for the submission gate.
 

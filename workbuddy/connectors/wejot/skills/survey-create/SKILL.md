@@ -29,7 +29,7 @@ HTML must reference `./survey-ui.css` and `./survey-ui.js`. `survey-bridge.js` s
 4. `GENERIC` requirements → load `survey-components` first. Cross-question runtime behavior → `survey-logic`.
 5. When Python is available, run the applicable local validator (`validate_standard_survey.py` or `validate_free_mode_survey.py`) and fix blocking issues.
 6. Submit only on explicit user request. Immediately before submit, let the host re-check the latest version without pulling over the edited draft. Package exactly the four required basenames, compute the bundle SHA-256 as lowercase hexadecimal plus its positive byte size, then let the host call `prepareSubmitBundleUpload`, perform the returned upload instruction with the unchanged bundle, and call `submitSurveyArtifacts` with the same manifest.
-7. Verify the returned new version and use the exact editor handoff returned by the service. Do not download the post-submit bundle over the just-submitted local files.
+7. Verify the returned new version and complete the post-publication editor handoff in `wejot-authoring-lifecycle`. Do not download the post-submit bundle over the just-submitted local files.
 
 Never overwrite an existing local draft during pull without first reporting the conflict and obtaining explicit user approval. Keep the returned `survey_version` as `base_version`. The optional header image is submitted separately from the four-file ZIP; keep the HTML cover reference consistent with it.
 

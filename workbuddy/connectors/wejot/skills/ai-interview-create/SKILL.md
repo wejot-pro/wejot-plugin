@@ -88,6 +88,6 @@ Infer ordinary product details rather than delaying a well-specified request:
 2. For a new interview, build the schema from the user’s topic, objectives, question count, and explicit constraints using the internal references above.
 3. For an existing interview, start from the pulled JSON even when its CSS or JS companions are empty. Patch only the requested fields. Preserve UUIDs, sort order, types, requiredness, conditions, follow-up policies, modes, recording settings, service-normalized metadata, and other non-target fields unless the user asks to redesign them.
 4. Run generate_interview_survey.py against the draft workspace to normalize the JSON and regenerate HTML, CSS, and JS. If a generated companion was then manually edited without regeneration, run validate_interview_survey.py.
-5. Resolve every validation error. Submit only when the user explicitly requests publication, using the host-driven version workflow and the newly generated four-artifact bundle.
+5. Resolve every validation error. Submit only when the user explicitly requests publication, using the host-driven version workflow and the newly generated four-artifact bundle. After success, complete the editor handoff in `wejot-authoring-lifecycle`.
 
 Do not rewrite an existing schema wholesale for a translation, wording change, title edit, or other narrow request. Whole-schema redesign is appropriate only for a new interview or an explicitly requested structural redesign.
