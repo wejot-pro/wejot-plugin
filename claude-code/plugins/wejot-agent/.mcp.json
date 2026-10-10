@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "wejot": {
+      "type": "http",
+      "url": "https://wejot-backend-user-test.xiaotunqifu.com/mcp"
+    }
+  }
+}

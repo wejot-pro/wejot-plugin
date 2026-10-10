@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>问卷标题</title>
+    <!-- survey-ui.css（问卷样式层）：沙箱实际位于当前工作目录 ./survey-ui.css，LLM 可直接修改，保存后自动同步到 OSS -->
+    <link rel="stylesheet" href="./survey-ui.css" data-inject="survey-css">
+    <!-- survey-ui.js（问卷逻辑层）：沙箱实际位于当前工作目录 ./survey-ui.js，LLM 可直接修改，保存后自动同步到 OSS -->
+    <script src="./survey-ui.js" data-inject="survey-js" defer></script>
+    <!-- survey-bridge.js is loaded from the platform CDN; consult this skill's bundled read-only template copy when runtime details are needed. -->
+    <script src="https://wejot-pro.oss-cn-shenzhen.aliyuncs.com/jscript/_agent_uploads/survey-bridge-20260823-1.js"></script>
+    <!-- Sortable.js（拖拽组件）（一般情况下不需读取及修改） -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+
+<div class="sh" data-survey-role="survey">
+    <div class="cv">
+        <img class="header-img" src="https://wejot-pro.oss-cn-shenzhen.aliyuncs.com/picture/cover-default.png" alt="封面"/>
+        <h1 data-title="survey"><span>问卷标题</span></h1>
+        <p data-desc="description"><span>问卷描述</span></p>
+    </div>
+
+    <div class="prog" id="progressBar" data-snapshot-exclude>
+        <div class="prog-track">
+            <div class="prog-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- QUESTION_LIST_START: 题目列表区域开始（用于定位题目插入位置，不受条件判断影响） -->
+
+    <!-- 分页符示例：每个页面开始处必须有一个 .pb[data-page-break]，第一页也需要 -->
+    <div class="pb" data-page-break="1"><span>第 1 页</span></div>
+
+    <!-- QUESTION_REGION_START: type=8 (单选题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8bac" data-question-type="8" data-question-index="1" data-required="true">
+        <div class="qh">
+            <span class="req">*</span>
+            <span data-q-number>01</span>
+            <span data-title>您使用自行车的主要目的是什么？</span>
+            <div class="qd">题目描述/提示文字放在这里</div>
+        </div>
+        <div class="qb">
+            <label class="opt" data-option data-option-value="commute">
+                <input type="radio" name="q1" value="commute">
+                <span class="rd"></span>
+                <span>通勤</span>
+            </label>
+            <label class="opt" data-option data-option-value="sport">
+                <input type="radio" name="q1" value="sport">
+                <span class="rd"></span>
+                <span>运动</span>
+            </label>
+            <!-- 其它选项示例：data-option-other + data-other-input 为 survey-ui.js 识别契约 -->
+            <label class="opt" data-option data-option-other data-option-value="q1__other__other">
+                <input type="radio" name="q1" value="q1__other__other">
+                <span class="rd"></span>
+                <span>其它</span>
+                <input type="text" data-other-input placeholder="请输入其它内容" />
+            </label>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=8 -->
+
+    <!-- QUESTION_REGION_START: type=39 (自定义题) -->
+    <!--
+      自定义题（type=39）DOM 约定：
+      1. 外层 .q[data-question] 必须有 data-question-uuid / data-question-type="39" / data-question-index / data-required
+      2. 内部 .gx 容器必须有 data-question-uuid（与外层 .q 一致）
+      3. .gx 内必须有 <script data-answer-keys="...">，data-answer-keys 的值与 JSON answerKeys 一致
+      4. 自定义交互逻辑写在该 script 标签内，通过 survey-bridge.js 提供的 submitGenericAnswer 提交答案
+    -->
+    <div class="q" data-question data-question-uuid="a1b2c3d4e5f6789012345678abcdef01" data-question-type="39" data-question-index="2" data-required="false">
+        <div class="qh">
+            <span data-q-number>02</span>
+            <span data-title>请为本次服务打分</span>
+        </div>
+        <div class="qb">
+            <div class="gx" data-survey-role="generic-container" data-question-uuid="a1b2c3d4e5f6789012345678abcdef01">
+                <div class="gc answer-question-generic-content">
+                    <div class="ns" data-role="nps-scale">
+                        <button type="button" class="nb" data-nps="0">0</button>
+                        <button type="button" class="nb" data-nps="1">1</button>
+                        <button type="button" class="nb" data-nps="2">2</button>
+                        <button type="button" class="nb" data-nps="3">3</button>
+                        <button type="button" class="nb" data-nps="4">4</button>
+                        <button type="button" class="nb" data-nps="5">5</button>
+                        <button type="button" class="nb" data-nps="6">6</button>
+                        <button type="button" class="nb" data-nps="7">7</button>
+                        <button type="button" class="nb" data-nps="8">8</button>
+                        <button type="button" class="nb" data-nps="9">9</button>
+                        <button type="button" class="nb" data-nps="10">10</button>
+                    </div>
+                    <p data-role="nps-tip">请点击按钮打分</p>
+                </div>
+                <script data-answer-keys="npsScore">
+                    (function() {
+                        var scriptEl = document.currentScript;
+                        var wrapper = scriptEl && scriptEl.closest('.gx');
+                        var questionId = wrapper ? wrapper.getAttribute('data-question-uuid') : null;
+                        var score = null;
+
+                        function submitAnswer(answers) {
+                            if (!questionId || !answers || typeof answers !== 'object') return;
+                            if (typeof window.submitGenericAnswer !== 'undefined') {
+                                window.submitGenericAnswer(questionId, answers);
+                            }
+                        }
+
+                        function getCurrentAnswer() {
+                            if (score == null) return {};
+                            return { npsScore: score };
+                        }
+
+                        function refreshUI() {
+                            var btns = wrapper.querySelectorAll('.nb[data-nps]');
+                            btns.forEach(function(btn) {
+                                var v = Number(btn.getAttribute('data-nps'));
+                                var active = v === score;
+                                btn.classList.toggle('is-active', active);
+                            });
+                            var tip = wrapper.querySelector('[data-role="nps-tip"]');
+                            if (tip) tip.textContent = typeof score === 'number' ? ('已选 ' + score + ' 分') : '请点击按钮打分';
+                        }
+
+                        if (wrapper && !wrapper._npsBound) {
+                            wrapper._npsBound = true;
+                            var scale = wrapper.querySelector('[data-role="nps-scale"]');
+                            if (scale) {
+                                scale.addEventListener('click', function(e) {
+                                    var btn = e.target && e.target.closest('.nb[data-nps]');
+                                    if (!btn) return;
+                                    var v = parseInt(btn.getAttribute('data-nps'), 10);
+                                    if (!isNaN(v)) {
+                                        score = v;
+                                        submitAnswer(getCurrentAnswer());
+                                        refreshUI();
+                                    }
+                                });
+                            }
+                            window.addEventListener('survey:before-submit', function() {
+                                var ans = getCurrentAnswer();
+                                if (ans && Object.keys(ans).length > 0) submitAnswer(ans);
+                            });
+                        }
+                        refreshUI();
+                    })();
+                </script>
+            </div>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=39 -->
+
+    <!-- QUESTION_REGION_START: type=9 (多选题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8bad" data-question-type="9" data-question-index="3" data-required="true" data-min-choices="0" data-max-choices="3">
+        <div class="qh">
+            <span class="req">*</span>
+            <span data-q-number>03</span>
+            <span data-title>您常用的出行方式有哪些？（可多选）</span>
+        </div>
+        <div class="qb">
+            <label class="opt" data-option data-option-value="bike">
+                <input type="checkbox" name="q3" value="bike">
+                <span class="cb"></span>
+                <span>自行车</span>
+            </label>
+            <label class="opt" data-option data-option-value="bus">
+                <input type="checkbox" name="q3" value="bus">
+                <span class="cb"></span>
+                <span>公交</span>
+            </label>
+            <label class="opt" data-option data-option-value="subway">
+                <input type="checkbox" name="q3" value="subway">
+                <span class="cb"></span>
+                <span>地铁</span>
+            </label>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=9 -->
+
+    <!-- QUESTION_REGION_START: type=1 (文本题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8bae" data-question-type="1" data-question-index="4" data-required="false">
+        <div class="qh">
+            <span data-q-number>04</span>
+            <span data-title>请描述您的建议</span>
+        </div>
+        <div class="qb">
+            <textarea placeholder="请输入..." data-input-type="text" data-max-length="255" data-min-length="0"></textarea>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=1 -->
+
+    <!-- QUESTION_REGION_START: type=15 (上传题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8baf" data-question-type="15" data-question-index="5" data-required="false" data-max-file-count="1" data-max-file-size="102400" data-file-types="image/*">
+        <div class="qh">
+            <span data-q-number>05</span>
+            <span data-title>请上传相关图片</span>
+        </div>
+        <div class="qb">
+            <label class="up">
+                <input type="file" accept="image/*" />
+                <span class="up-icon"></span>
+                <span>上传</span>
+            </label>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=15 -->
+
+    <!-- QUESTION_REGION_START: type=10 (量表题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8bb0" data-question-type="10" data-question-index="6" data-required="true">
+        <div class="qh">
+            <span class="req">*</span>
+            <span data-q-number>06</span>
+            <span data-title>您对本次服务的满意度</span>
+        </div>
+        <div class="sl"><span>非常不满意</span><span>非常满意</span></div>
+        <div class="qb">
+            <div class="sv" data-survey-role="scale-group">
+                <div class="sc" data-option data-scale-value="1">1</div>
+                <div class="sc" data-option data-scale-value="2">2</div>
+                <div class="sc" data-option data-scale-value="3">3</div>
+                <div class="sc" data-option data-scale-value="4">4</div>
+                <div class="sc" data-option data-scale-value="5">5</div>
+            </div>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=10 -->
+
+    <!-- QUESTION_REGION_START: type=28 (矩阵量表题) -->
+    <div class="q" data-question data-question-uuid="019c465d81ab71d29498ea78cd7f8bb1" data-question-type="28" data-question-index="7" data-required="true">
+        <div class="qh">
+            <span class="req">*</span>
+            <span data-q-number>07</span>
+            <span data-title>请对以下维度进行评价</span>
+        </div>
+        <div class="sl"><span>非常差</span><span>非常好</span></div>
+        <div class="qb">
+            <div class="mx" data-survey-role="matrix-group">
+                <div class="mr" data-survey-role="matrix-row" data-matrix-row="服务态度" data-matrix-row-label="服务态度"><span>服务态度</span><div class="mv" data-survey-role="matrix-values"><div class="sc" data-option data-scale-value="1">1</div><div class="sc" data-option data-scale-value="2">2</div><div class="sc" data-option data-scale-value="3">3</div></div></div>
+                <div class="mr" data-survey-role="matrix-row" data-matrix-row="响应速度" data-matrix-row-label="响应速度"><span>响应速度</span><div class="mv" data-survey-role="matrix-values"><div class="sc" data-option data-scale-value="1">1</div><div class="sc" data-option data-scale-value="2">2</div><div class="sc" data-option data-scale-value="3">3</div></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- QUESTION_REGION_END: type=28 -->
+
+    <!-- QUESTION_INSERT_POINT: 题目列表区域结束（用于定位题目插入位置，不受条件判断影响） -->
+
+    <div class="nv" data-survey-role="navigation" data-snapshot-exclude>
+        <button class="bp" id="prevBtn" data-nav-action="prev" data-snapshot-exclude>
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.99997 4C9.99997 4 6.00001 6.94596 6 8.00003C5.99999 9.05411 10 12 10 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <button class="bs" id="nextBtn" data-nav-action="next" data-snapshot-exclude>继续</button>
+    </div>
+</div>
+
+</body>
+</html>

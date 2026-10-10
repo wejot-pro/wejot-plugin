@@ -1,0 +1,27 @@
+{
+  "name": "wejot",
+  "owner": {
+    "name": "WeJot"
+  },
+  "metadata": {
+    "description": "WeJot plugins for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "wejot-agent",
+      "source": "./claude-code/plugins/wejot-agent",
+      "description": "Design, create, revise, validate, and submit WeJot surveys and AI interviews; retrieve, clean, and analyze response data with specialized workflows.",
+      "category": "productivity",
+      "author": {
+        "name": "WeJot"
+      },
+      "keywords": [
+        "wejot",
+        "survey",
+        "research",
+        "analysis",
+        "mcp"
+      ]
+    }
+  ]
+}

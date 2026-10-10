@@ -1,0 +1,35 @@
+{
+  "intro": {
+    "title": "安全生产知识测验",
+    "sub": "请独立完成，客观题提交后自动判分",
+    "notices": [
+      "共 2 题",
+      "满分 150 分，60 分及格",
+      "文本题、上传题不参与自动计分"
+    ],
+    "chips": ["客观题自动阅卷"],
+    "cta": "开始考试"
+  },
+  "display": {
+    "layout": "scroll",
+    "showResultToUser": true,
+    "thanksText": "感谢您的作答，问卷已提交。"
+  },
+  "scoring": {
+    "model": "sum",
+    "autoExcludeTypes": ["TEXTAREA", "UPLOAD"],
+    "excludeQuestionCodes": [],
+    "maxScore": 150,
+    "mapping": {
+      "Q1": { "1": 10, "2": 0, "3": 0, "4": 0 },
+      "Q2": { "1": 0, "2": 2, "3": 0, "4": 0 },
+      "Q3": { "1": 0, "2": 3, "3": 0, "4": 0 }
+    }
+  },
+  "grades": [
+    { "min": 90, "label": "优秀" },
+    { "min": 60, "label": "合格" },
+    { "min": 0, "label": "待加强" }
+  ],
+  "evalResult": { "format": "score" }
+}

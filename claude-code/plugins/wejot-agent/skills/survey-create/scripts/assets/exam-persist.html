@@ -1,0 +1,23 @@
+  <script>
+    /* ===== 考试落库套件 EXAM_PERSIST BEGIN =====
+       算分完成后由 generate_exam.py 注入逻辑调用 WJExamPersist.finish()，
+       自动 submitAndStay 落库（含 eval_result），全卷答案仍由 buildAnswers() 提交。 */
+    (function () {
+      'use strict';
+      var _persisted = false
+      function finish() {
+        if (_persisted) return
+        var B = window.SurveyDataBridge
+        if (!B || typeof B.submitAndStay !== 'function' || typeof window.buildAnswers !== 'function') return
+        _persisted = true
+        try {
+          B.submitAndStay({
+            answers: window.buildAnswers(),
+            evalResult: window.__WJ_EVAL_RESULT__,
+          })
+        } catch (e) {}
+      }
+      window.WJExamPersist = { finish: finish }
+    })()
+    /* ===== EXAM_PERSIST END ===== */
+  </script>

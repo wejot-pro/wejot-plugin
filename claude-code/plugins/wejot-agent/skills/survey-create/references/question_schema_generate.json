@@ -1,0 +1,157 @@
+{
+  "survey": {
+    "title": "All question types example survey",
+    "description": "Minimal configuration demonstrating standard and custom question types"
+  },
+  "radioQuestions": [
+    {
+      "title": "Have you used this product in the past week?",
+      "description": "Screens recent users",
+      "code": "used_product_last_week",
+      "uuid": "3289fe49d2e5408a9dd4f94508a4ee9e",
+      "type": "RADIO",
+      "required": 1,
+      "sort": 1000,
+      "options": [
+        {
+          "sort": 1,
+          "label": "Yes",
+          "description": ""
+        },
+        {
+          "sort": 2,
+          "label": "No",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "checkboxQuestions": [
+    {
+      "title": "Which areas would you like us to improve first?",
+      "description": "Multi-select; collects priority directions",
+      "code": "improvement_priorities",
+      "uuid": "c510de91bc944dd6a4c21f4a9552fdbd",
+      "type": "CHECKBOX",
+      "required": 0,
+      "sort": 2000,
+      "options": [
+        {
+          "sort": 1,
+          "label": "Feature stability",
+          "description": ""
+        },
+        {
+          "sort": 2,
+          "label": "Page speed",
+          "description": ""
+        },
+        {
+          "sort": 3,
+          "label": "Interaction experience",
+          "description": ""
+        }
+      ],
+      "maxChoices": 3,
+      "minChoices": 1
+    }
+  ],
+  "textQuestions": [
+    {
+      "title": "Briefly describe the feature you most want us to add",
+      "description": "Collects open suggestions",
+      "code": "expected_new_feature",
+      "uuid": "c70d78519476415c861848fac749fef0",
+      "type": "TEXTAREA",
+      "required": 0,
+      "sort": 3000,
+      "placeholder": "Please enter your thoughts",
+      "defaultValue": "",
+      "minLength": 0,
+      "maxLength": 500
+    }
+  ],
+  "uploadQuestions": [
+    {
+      "title": "Please upload a screenshot of the issue (optional)",
+      "description": "Helps locate the issue",
+      "code": "issue_screenshot",
+      "uuid": "bd40f3dfbe0346a08850324de3315f70",
+      "type": "UPLOAD",
+      "required": 0,
+      "sort": 4000,
+      "maxFileCount": 2,
+      "maxFileSize": 102400,
+      "fileTypes": [
+        "jpg",
+        "jpeg",
+        "png",
+        "pdf"
+      ]
+    }
+  ],
+  "scaleQuestions": [
+    {
+      "title": "How satisfied are you with the overall experience?",
+      "description": "5-point rating question (default 1~5; auto-generated when minScale/maxScale are not written)",
+      "code": "overall_satisfaction",
+      "uuid": "21de34e98d014b668ff5da33eb232e1d",
+      "type": "SCALE",
+      "required": 1,
+      "sort": 5000,
+      "options": []
+    }
+  ],
+  "matrixScaleQuestions": [
+    {
+      "title": "Please rate the following dimensions",
+      "description": "Multi-dimension satisfaction evaluation",
+      "code": "dimension_rating",
+      "uuid": "b8fd188cf35f45a4861b138a70453b7b",
+      "type": "MATRIX_SCALE",
+      "required": 0,
+      "sort": 6000,
+      "columns": [],
+      "rows": [
+        {
+          "title": "Feature completeness",
+          "sort": 1
+        },
+        {
+          "title": "Stability",
+          "sort": 2
+        },
+        {
+          "title": "Ease of use",
+          "sort": 3
+        }
+      ]
+    }
+  ],
+  "genericQuestions": [
+    {
+      "title": "Please complete a custom interaction question",
+      "description": "Custom question-type example; read the generic-question skill before writing the spec",
+      "code": "custom_interaction_question",
+      "uuid": "fa024f4a07ac400a832f08be3f6c1ade",
+      "type": "GENERIC",
+      "required": 0,
+      "sort": 7000,
+      "answerKeys": [
+        "answer"
+      ],
+      "userAnswersSample": [
+        {
+          "answer": 10
+        },
+        {
+          "answer": 9
+        },
+        {
+          "answer": 8
+        }
+      ],
+      "chartHtml": "<!-- 图表部分 开始 -->\\n<div id=\"chart-no-data\" style=\"text-align:center;color:rgba(0,0,0,.4);padding:24px\">No data</div>\\n<div id=\"chart-content\" style=\"display:none;width:100%\"></div>\\n<script>\\nwindow.renderChart=function(userAnswers,answerKeys){\\n  var key=(answerKeys&&answerKeys[0])||'answer';\\n  var values=(userAnswers||[]).map(function(x){return Number(x[key]);}).filter(function(v){return !Number.isNaN(v);});\\n  var avg=values.length?(values.reduce(function(a,b){return a+b;},0)/values.length).toFixed(2):'0.00';\\n  var content=document.getElementById('chart-content');\\n  if(content)content.innerHTML='<div>Average: '+avg+'</div>';\\n};\\n</script>\\n<!-- 图表部分 结束 -->"
+    }
+  ]
+}
